@@ -82,7 +82,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/r2c2"
+                android:id="@+id/swichAvl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -111,7 +111,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/r3c2"
+                android:id="@+id/drinksAvl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -140,7 +140,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/r4c2"
+                android:id="@+id/snacksAvl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

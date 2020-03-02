@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,82 +8,116 @@
     android:background="@color/colorPrimary">
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginRight="10dp"
+        android:layout_height="40dp"
+        android:background="@color/design_default_color_primary_dark"
+        android:paddingTop="5dp"
+        android:text="      Select a Location"
         android:textColor="@color/colorPrimaryDark"
-        android:text="Cooper And UTA Blvd." />
+        android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/cooperUtaTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="Cooper And UTA Blvd."
         android:textColor="@color/colorPrimaryDark"
-        android:text="W Nedderman and Greek Row" />
+        android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/nedderGreekTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="W Nedderman and Greek Row"
         android:textColor="@color/colorPrimaryDark"
-        android:text="S Davis and w Mitchel" />
+        android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/davisMitchellTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="S Davis and w Mitchell"
         android:textColor="@color/colorPrimaryDark"
-        android:text="Cooper and W Mitchel" />
+        android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView15"
+        android:id="@+id/cooperMitchellTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="Cooper and W Mitchell"
         android:textColor="@color/colorPrimaryDark"
-        android:text="S Oak and UTA Blvd." />
+        android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/oakUtaTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="S Oak and UTA Blvd."
         android:textColor="@color/colorPrimaryDark"
-        android:text="Spaniolo And w 1st" />
+        android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/spanioloWTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="Spaniolo And w 1st"
         android:textColor="@color/colorPrimaryDark"
-        android:text="Spaniolo And W Mitchell" />
+        android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView18"
+        android:id="@+id/spanioloMitchellTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="Spaniolo And W Mitchell"
         android:textColor="@color/colorPrimaryDark"
-        android:text="S Center and W Mitchell" />
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/centerMitchellTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="10dp"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:text="S Center and W Mitchell"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp" />
 </LinearLayout>

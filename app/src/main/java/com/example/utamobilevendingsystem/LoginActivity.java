@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         register = findViewById(R.id.register);
         db= dbHelper.getWritableDatabase();
         login = findViewById(R.id.button);
+        //insert();
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,26 +81,96 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void insert(){
-        ContentValues contentValues=new ContentValues();
-        contentValues.put("user_id","1");
-        contentValues.put("username","test");
-        contentValues.put("password","pass123");
-        contentValues.put("role","user");
-        contentValues.put("recovery","");
-        db.insert(Resources.TABLE_USER_CREDS,null, contentValues);
-        ContentValues cv= new ContentValues();
-        cv.put("user_id","1");
-        cv.put("username","test");
-        cv.put("first_name","Prajwal");
-        cv.put("last_name","Prasad");
-        cv.put("uta_id","1001");
-        cv.put("dob","11/11/2019");
-        cv.put("phone","9876666111");
-        cv.put("emailid","pp@gmail.com");
-        cv.put("city","blr");
-        cv.put("state","KA");
-        cv.put("zip","560079");
-        db.insert(Resources.TABLE_USER_DETAILS,null, cv);
+        ContentValues user_creds=new ContentValues();
+        user_creds.put("user_id","1");
+        user_creds.put("username","test");
+        user_creds.put("password","pass123");
+        user_creds.put("role","User");
+        db.insert(Resources.TABLE_USER_CREDS,null, user_creds);
+        ContentValues user_details= new ContentValues();
+        user_details.put("user_id","1");
+        user_details.put("username","test");
+        user_details.put("first_name","Prajwal");
+        user_details.put("last_name","Prasad");
+        user_details.put("uta_id","1001");
+        user_details.put("dob","11/11/2019");
+        user_details.put("phone","9876666111");
+        user_details.put("emailid","pp@gmail.com");
+        user_details.put("city","blr");
+        user_details.put("state","KA");
+        user_details.put("zip","560079");
+        db.insert(Resources.TABLE_USER_DETAILS,null, user_details);
+        ContentValues items= new ContentValues();
+        items.put("item_id","1");
+        items.put("item_name","Sandwiches");
+        items.put("item_price","5.75");
+        db.insert(Resources.TABLE_ITEM,null, items);
+        items.put("item_id","2");
+        items.put("item_name","Drinks");
+        items.put("item_price","1.5");
+        db.insert(Resources.TABLE_ITEM,null, items);
+        items.put("item_id","3");
+        items.put("item_name","Snacks");
+        items.put("item_price","1.25");
+        db.insert(Resources.TABLE_ITEM,null, items);
+        ContentValues location= new ContentValues();
+        location.put("location_id","1");
+        location.put("name","Cooper And UTA Blvd");
+        location.put("schedule","2");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","2");
+        location.put("name","W Nedderman & Greek Row");
+        location.put("schedule","1");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","3");
+        location.put("name","S Davis & W Mitchell");
+        location.put("schedule","2");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","4");
+        location.put("name","S Oak & UTA Blvd");
+        location.put("schedule","3");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","5");
+        location.put("name","Spaniolo & W 1st");
+        location.put("schedule","4");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","6");
+        location.put("name","Spaniolo & W Mitchell");
+        location.put("schedule","2");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","7");
+        location.put("name","S Center & W Mitchell");
+        location.put("schedule","1");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        ContentValues vehicle= new ContentValues();
+        vehicle.put("vehicle_id","1");
+        vehicle.put("name","Truck 1");
+        vehicle.put("type","Food Truck");
+        vehicle.put("availability","2");
+        vehicle.put("location_id","1");
+        db.insert(Resources.TABLE_VEHICLE,null, vehicle);
+        vehicle.put("vehicle_id","2");
+        vehicle.put("name","Truck 2");
+        vehicle.put("type","Food Truck");
+        vehicle.put("availability","4");
+        vehicle.put("location_id","6");
+        db.insert(Resources.TABLE_VEHICLE,null, vehicle);
+        ContentValues vehicle_inventory= new ContentValues();
+        vehicle_inventory.put("id","1");
+        vehicle_inventory.put("vehicle_id","1");
+        vehicle_inventory.put("item_id","1");
+        vehicle_inventory.put("quantity","10");
+        db.insert(Resources.TABLE_VEHICLE_INVENTORY,null, vehicle_inventory);
+        vehicle_inventory.put("id","2");
+        vehicle_inventory.put("vehicle_id","1");
+        vehicle_inventory.put("item_id","2");
+        vehicle_inventory.put("quantity","5");
+        db.insert(Resources.TABLE_VEHICLE_INVENTORY,null, vehicle_inventory);
+        vehicle_inventory.put("id","3");
+        vehicle_inventory.put("vehicle_id","1");
+        vehicle_inventory.put("item_id","3");
+        vehicle_inventory.put("quantity","7");
+        db.insert(Resources.TABLE_VEHICLE_INVENTORY,null, vehicle_inventory);
     }
 
     public String fetch(String username,String password){
@@ -116,6 +187,12 @@ public class LoginActivity extends AppCompatActivity {
 
         UserCredentials userCredentials = new UserCredentials();
         int  uid=c.getInt(c.getColumnIndex(Resources.USER_CREDS_USER_ID));
+        //Store current user id as cart_id for that user in the db
+        ContentValues user_cart= new ContentValues();
+        user_cart.put("user_id",String.valueOf(uid));
+        user_cart.put("cart_id",String.valueOf(uid));
+        db.insert(Resources.TABLE_USER_CART,null, user_cart);
+
         String userRole = c.getString(c.getColumnIndex(Resources.USER_CREDS_ROLE));
         String profileQuery= "SELECT * FROM "+ Resources.TABLE_USER_DETAILS+ " WHERE " +  Resources.USER_DETAILS_ID + " = " + uid;
         Cursor c1 = db.rawQuery(profileQuery, null);

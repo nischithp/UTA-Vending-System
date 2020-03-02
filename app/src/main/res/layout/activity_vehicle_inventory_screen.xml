@@ -92,7 +92,7 @@
                 android:horizontalSpacing="10dp"/>
             <TextView
 
-                android:id="@+id/r2c2"
+                android:id="@+id/swichAvl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dip"
@@ -103,7 +103,7 @@
                 android:horizontalSpacing="10dp"/>
             <TextView
 
-                android:id="@+id/r2c3"
+                android:id="@+id/switchQty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dip"
@@ -132,7 +132,7 @@
                 android:horizontalSpacing="10dp"/>
             <TextView
 
-                android:id="@+id/r3c2"
+                android:id="@+id/drinksAvl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dip"
@@ -143,7 +143,7 @@
                 android:horizontalSpacing="10dp"/>
             <TextView
 
-                android:id="@+id/r3c3"
+                android:id="@+id/drinksQty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dip"
@@ -172,7 +172,7 @@
                 android:horizontalSpacing="10dp"/>
             <TextView
 
-                android:id="@+id/r4c2"
+                android:id="@+id/snacksAvl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dip"
@@ -183,7 +183,7 @@
                 android:horizontalSpacing="10dp"/>
             <TextView
 
-                android:id="@+id/r4c3"
+                android:id="@+id/snacksQty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dip"

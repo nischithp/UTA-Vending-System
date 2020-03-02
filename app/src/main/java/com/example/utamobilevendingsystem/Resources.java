@@ -190,7 +190,7 @@ public class Resources {
             + "(" + PAYMENTS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + PAYMENTS_USER_ID + " INTEGER, "
             + CARD_NUMBER + " INTEGER, "
-            + EXPIRATION_DATE + " DATE, "
+            + EXPIRATION_DATE + " TEXT, "
             + CARD_TYPE + " TEXT, "
             + "CONSTRAINT fk_table_payments FOREIGN KEY ("+PAYMENTS_USER_ID+") REFERENCES "+ TABLE_USER_CREDS+"(" +USER_CREDS_USER_ID+")"
             + ")";

@@ -6,7 +6,7 @@ public class Payments {
 
     private int paymentId;
     private int cardNumber;
-    private Date expirationDate;
+    private String expirationDate;
     private CardType cardType;
 
     public int getPaymentId() {
@@ -25,11 +25,11 @@ public class Payments {
         this.cardNumber = cardNumber;
     }
 
-    public Date getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
 

@@ -1,6 +1,6 @@
 package com.example.utamobilevendingsystem.domain;
 
-enum CardType {
+public enum CardType {
     DEBIT,
     CREDIT;
 }
