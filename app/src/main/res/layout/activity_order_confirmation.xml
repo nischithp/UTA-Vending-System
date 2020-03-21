@@ -19,18 +19,11 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <TableLayout
         android:id="@+id/tableLayout4"
-        android:layout_width="435dp"
+        android:layout_width="400dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
@@ -43,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:text="@string/food_item"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
@@ -52,7 +45,7 @@
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft="40dp"
                 android:text="@string/quantity"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
@@ -61,7 +54,7 @@
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
                 android:layout_column="3"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="10dp"
                 android:text="@string/price"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
@@ -75,57 +68,61 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:layout_marginLeft="20dp"
-                android:text="@string/sandwiches"
-                android:textColor="@android:color/holo_orange_dark"
-                android:textSize="25dp" />
-
-            <TextView
-                android:layout_width="101dp"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:layout_marginLeft="50dp"
-                android:text="0"
-                android:textColor="@android:color/holo_orange_dark"
-                android:textSize="25dp" />
-
-            <TextView
-                android:layout_width="101dp"
-                android:layout_height="match_parent"
-                android:layout_column="3"
-                android:layout_marginLeft="20dp"
-                android:text="0"
-                android:textColor="@android:color/holo_orange_dark"
-                android:textSize="25dp" />
-
-        </TableRow>
-
-
-        <TableRow android:layout_marginTop="30dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:text="@string/drinks"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
 
             <TextView
+                android:id="@+id/drinksQty"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft="40dp"
                 android:text="0"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
 
             <TextView
+                android:id="@+id/drinksPrice"
+                android:layout_width="101dp"
+                android:layout_height="match_parent"
+                android:layout_column="3"
+                android:layout_marginLeft="10dp"
+                android:text="0"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="25dp" />
+
+        </TableRow>
+
+
+        <TableRow android:layout_marginTop="30dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginLeft="10dp"
+                android:text="@string/sandwiches"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/swichQty"
+                android:layout_width="101dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginLeft="40dp"
+                android:text="0"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/swichPrice"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="3"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:text="0"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
@@ -138,25 +135,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:text="@string/snacks"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
 
             <TextView
+                android:id="@+id/snacksQty"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft="40dp"
                 android:text="0"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
 
             <TextView
+                android:id="@+id/snacksPrice"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="3"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:text="0"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
@@ -169,16 +168,17 @@
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
-                android:layout_marginLeft="50dp"
+                android:layout_marginLeft="40dp"
                 android:text="@string/total"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />
 
             <TextView
+                android:id="@+id/totalPrice"
                 android:layout_width="101dp"
                 android:layout_height="wrap_content"
                 android:layout_column="3"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:text=" "
                 android:textColor="@android:color/holo_orange_dark"
                 android:textSize="25dp" />

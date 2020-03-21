@@ -1,6 +1,7 @@
 package com.example.utamobilevendingsystem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -9,11 +10,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.SparseIntArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.utamobilevendingsystem.HomeScreens.UserHomeScreen;
 import com.example.utamobilevendingsystem.domain.Item;
 import com.example.utamobilevendingsystem.domain.OrderItem;
 import com.example.utamobilevendingsystem.domain.Payments;
@@ -31,6 +37,8 @@ public class UserOrder extends AppCompatActivity {
     UserCart userCart = new UserCart();
     HashMap<Integer,Integer> vehicleInventory = new HashMap<>();
     ContentValues cart = new ContentValues();
+    SharedPreferences.Editor editor;
+    int locationId=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +46,7 @@ public class UserOrder extends AppCompatActivity {
         Intent myint = getIntent();
         Bundle extras = myint.getExtras();
         String location="";
-        int locationId=0;
+
         if(extras!=null)
         {
              location = myint.getStringExtra("location");
@@ -57,25 +65,9 @@ public class UserOrder extends AppCompatActivity {
         drinksQty= findViewById(R.id.drinksQty);
         snacksQty= findViewById(R.id.snacksQty);
         placeOrder= findViewById(R.id.placeOrder);
+        editor = getSharedPreferences("userCart", MODE_PRIVATE).edit();
         getInventory(locationId);
-        switchQty.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                getUserInput();
-            }
-        });
-        drinksQty.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                getUserInput();
-            }
-        });
-        snacksQty.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                getUserInput();
-            }
-        });
+        placeOrderMethod();
     }
 
     private void getInventory(int locationId) {
@@ -87,6 +79,8 @@ public class UserOrder extends AppCompatActivity {
             c.moveToFirst();
         }
         int  vehicleID =c.getInt(c.getColumnIndex(Resources.VEHICLE_ID));
+
+        editor.putInt("vehicleID",vehicleID);
 
         String inventoryQuery= "SELECT * FROM "+ Resources.TABLE_VEHICLE_INVENTORY+ " WHERE " +  Resources.VEHICLE_INVENTORY_VEHICLE_ID + " = " + vehicleID;
         Cursor c1 = db.rawQuery(inventoryQuery, null);
@@ -104,33 +98,42 @@ public class UserOrder extends AppCompatActivity {
         snacksAvl.setText(String.valueOf(vehicleInventory.get(3)));
     }
 
-    private void getUserInput() {
-            double swichPrice = Double.parseDouble(switchPrice.getText().toString().substring(1)) * Integer.parseInt(switchQty.getText().toString());
-            double drnksPrice = Double.parseDouble(drinksPrice.getText().toString().substring(1)) * Integer.parseInt(drinksQty.getText().toString());
-            double snksPrice = Double.parseDouble(snacksPrice.getText().toString().substring(1)) * Integer.parseInt(snacksQty.getText().toString());
-
-            double total = swichPrice+drnksPrice+snksPrice;
-            totalPrice.setText("Total = $"+total);
-            placeOrderMethod(total);
-    }
-
-    private void placeOrderMethod(double total) {
+    private void placeOrderMethod() {
         placeOrder.setClickable(true);
         placeOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                double swichPrice = Double.parseDouble(switchPrice.getText().toString().substring(1)) * Integer.parseInt(switchQty.getText().toString());
+                double drnksPrice = Double.parseDouble(drinksPrice.getText().toString().substring(1)) * Integer.parseInt(drinksQty.getText().toString());
+                double snksPrice = Double.parseDouble(snacksPrice.getText().toString().substring(1)) * Integer.parseInt(snacksQty.getText().toString());
+
+                double total = swichPrice+drnksPrice+snksPrice;
+                totalPrice.setText("Total = $"+total);
+                editor.putString("swichPrice", String.valueOf(swichPrice));
+                editor.putString("drinksPrice", String.valueOf(drnksPrice));
+                editor.putString("snacksPrice", String.valueOf(snksPrice));
                 boolean flag= true;
-                if(Integer.parseInt(switchQty.getText().toString()) > Integer.parseInt(switchQty.getText().toString())){
+                int sandwichQTY = Integer.parseInt(switchQty.getText().toString());
+                int drinksQTY = Integer.parseInt(drinksQty.getText().toString());
+                int snacksQTY= Integer.parseInt(snacksQty.getText().toString());
+                int sandwichAVL = Integer.parseInt(swichAvl.getText().toString());
+                int drinksAVL = Integer.parseInt(drinksAvl.getText().toString());
+                int snacksAVL = Integer.parseInt(snacksAvl.getText().toString());
+                if(sandwichQTY> sandwichAVL){
                     switchQty.setError("Please enter according to availability of item");
                     flag= false;
                 }
-                if(Integer.parseInt(drinksQty.getText().toString()) > Integer.parseInt(drinksQty.getText().toString())){
-                    switchQty.setError("Please enter according to availability of item");
+                if(drinksQTY> drinksAVL){
+                    drinksQty.setError("Please enter according to availability of item");
                     flag= false;
                 }
-                if(Integer.parseInt(snacksQty.getText().toString()) > Integer.parseInt(snacksQty.getText().toString())){
-                    switchQty.setError("Please enter according to availability of item");
+                if(snacksQTY>snacksAVL ){
+                    snacksQty.setError("Please enter according to availability of item");
                     flag= false;
+                }
+                if(sandwichQTY==0 && drinksQTY==0 && snacksQTY==0){
+                    switchQty.setError("Please select at least 1 item before placing order");
+                    flag=false;
                 }
                 if(flag){
                     SQLiteDatabase db=DatabaseHelper.getInstance(getApplicationContext()).getWritableDatabase();
@@ -138,16 +141,25 @@ public class UserOrder extends AppCompatActivity {
                     int uid =prefs.getInt("userid",0);
                     cart.put("cart_ID",uid);
                     cart.put("cart_item_id",1);
-                    cart.put("quantity",Integer.parseInt(switchQty.getText().toString()));
+                    cart.put("quantity",sandwichQTY);
                     db.insert(Resources.TABLE_CART,null, cart);
                     cart.put("cart_ID",uid);
                     cart.put("cart_item_id",2);
-                    cart.put("quantity",Integer.parseInt(drinksQty.getText().toString()));
+                    cart.put("quantity",drinksQTY);
                     db.insert(Resources.TABLE_CART,null, cart);
                     cart.put("cart_ID",uid);
                     cart.put("cart_item_id",3);
-                    cart.put("quantity",Integer.parseInt(snacksQty.getText().toString()));
+                    cart.put("quantity",snacksQTY);
                     db.insert(Resources.TABLE_CART,null, cart);
+                    editor.putInt("swichAvl",sandwichAVL);
+                    editor.putInt("drinksAvl",drinksAVL);
+                    editor.putInt("snacksAvl",snacksAVL);
+                    editor.putInt("swichQty",sandwichQTY);
+                    editor.putInt("drinksQty",drinksQTY);
+                    editor.putInt("snacksQty",snacksQTY);
+                    editor.putInt("locationID",locationId);
+                    editor.apply();
+                    Toast.makeText(getApplicationContext(),"Items added to cart!",Toast.LENGTH_SHORT).show();
                     Intent myint = new Intent(UserOrder.this, CardDetails.class);
                     myint.putExtra("total",total);
                     myint.putExtra("uid",uid);
@@ -155,6 +167,68 @@ public class UserOrder extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.user_menu,menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_location:
+                viewLocationList();
+                return true;
+            case R.id.menu_view_orders:
+                viewOrders();
+                return true;
+            case R.id.app_bar_search:
+                vehicleSearch();
+                return true;
+            case R.id.menu_logout:
+                logout();
+                return true;
+            case R.id.menu_home:
+                Intent homeIntent = new Intent(this, UserHomeScreen.class);
+                startActivity(homeIntent);
+                return true;
+            case R.id.change_password:
+                changePassword();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void vehicleSearch() {
+        Intent myint = new Intent(this, VehicleScreen.class);
+        startActivity(myint);
+    }
+
+    private void viewOrders() {
+        Intent myint = new Intent(this, OrderDetails.class);
+        startActivity(myint);
+    }
+
+    private void logout() {
+        SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+        Intent logout = new Intent(this, LoginActivity.class);
+        startActivity(logout);
+    }
+
+    private void changePassword() {
+        Intent changePasswordIntent = new Intent(this, ChangePassword.class);
+        startActivity(changePasswordIntent);
+    }
+
+    private void viewLocationList(){
+        Intent changePasswordIntent = new Intent(this, LocationScreen.class);
+        startActivity(changePasswordIntent);
     }
 
 }

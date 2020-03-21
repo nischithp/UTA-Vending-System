@@ -12,17 +12,10 @@ import com.example.utamobilevendingsystem.ChangePassword;
 import com.example.utamobilevendingsystem.DatabaseHelper;
 import com.example.utamobilevendingsystem.LocationScreen;
 import com.example.utamobilevendingsystem.LoginActivity;
-import com.example.utamobilevendingsystem.OrderDetails;
 import com.example.utamobilevendingsystem.Resources;
-import com.example.utamobilevendingsystem.VehicleScreen;
 import com.example.utamobilevendingsystem.domain.RegistrationHelper;
-import com.example.utamobilevendingsystem.domain.UserDetails;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 
 import android.util.Log;
 import android.view.Menu;
@@ -35,18 +28,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.R;
-import com.google.android.material.tabs.TabLayout;
 
-public class UserHomeScreen extends RegistrationHelper {
+public class OperatorHomeScreen extends RegistrationHelper {
     String firstName,lastName,username,dob,phoneNummber,email,address,city,state,zip;
-    int utaID,userID;
-    TextView fNameTV,lNameTV,usernameTV,dobTV,phoneNummberTV,emailTV,addressTV,cityTV,stateTV,zipTV,utaidTV;
+    int userID;
+    TextView fNameTV,lNameTV,usernameTV,dobTV,phoneNummberTV,emailTV,addressTV,cityTV,stateTV,zipTV;
     EditText emailET,addressET,cityET,stateET,zipET,phoneET,dobET;
     Button update;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_home_screen);
+        setContentView(R.layout.activity_vendor_home_screen);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fNameTV = findViewById(R.id.fNameTV);
@@ -59,7 +51,6 @@ public class UserHomeScreen extends RegistrationHelper {
         cityTV= findViewById(R.id.cityTV);
         stateTV= findViewById(R.id.stateTV);
         zipTV= findViewById(R.id.zipTV);
-        utaidTV= findViewById(R.id.utaidTV);
         emailET= findViewById(R.id.emailET);
         addressET= findViewById(R.id.addressET);
         cityET= findViewById(R.id.cityET);
@@ -111,7 +102,7 @@ public class UserHomeScreen extends RegistrationHelper {
                     flag = false;
                 }
                 if (flag) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(UserHomeScreen.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(OperatorHomeScreen.this);
                     //new AlertDialog.Builder(getApplication())
                     builder.setTitle("Update Profile");
                     builder.setMessage("Are you sure you want to make these changes to your profile?")
@@ -174,7 +165,6 @@ public class UserHomeScreen extends RegistrationHelper {
         stateET.setText(state);
         zipTV.setText("ZIP: ");
         zipET.setText(zip);
-        utaidTV.setText("UTA ID: "+String.valueOf(utaID));
     }
 
     private void fetchSharedPref() {
@@ -190,7 +180,6 @@ public class UserHomeScreen extends RegistrationHelper {
         state =prefs.getString("state","");
         zip =prefs.getString("zip","");
         userID= prefs.getInt("userid",0);
-        utaID = prefs.getInt("utaid",0);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -207,10 +196,10 @@ public class UserHomeScreen extends RegistrationHelper {
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                viewOrders();
+                //startSettings();
                 return true;
             case R.id.app_bar_search:
-                vehicleSearch();
+                //startSettings();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -225,31 +214,21 @@ public class UserHomeScreen extends RegistrationHelper {
         }
     }
 
-    private void vehicleSearch() {
-        Intent myint = new Intent(UserHomeScreen.this, VehicleScreen.class);
-        startActivity(myint);
-    }
-
-    private void viewOrders() {
-        Intent myint = new Intent(UserHomeScreen.this, OrderDetails.class);
-        startActivity(myint);
-    }
-
     private void logout() {
         SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
         editor.clear();
         editor.apply();
-        Intent logout = new Intent(UserHomeScreen.this, LoginActivity.class);
+        Intent logout = new Intent(OperatorHomeScreen.this, LoginActivity.class);
         startActivity(logout);
     }
 
     private void changePassword() {
-        Intent changePasswordIntent = new Intent(UserHomeScreen.this, ChangePassword.class);
+        Intent changePasswordIntent = new Intent(OperatorHomeScreen.this, ChangePassword.class);
         startActivity(changePasswordIntent);
     }
 
     private void viewLocationList(){
-        Intent changePasswordIntent = new Intent(UserHomeScreen.this, LocationScreen.class);
+        Intent changePasswordIntent = new Intent(OperatorHomeScreen.this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }
 

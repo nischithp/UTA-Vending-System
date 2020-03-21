@@ -6,25 +6,16 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 
 import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
 import com.example.utamobilevendingsystem.HomeScreens.UserHomeScreen;
-import com.example.utamobilevendingsystem.HomeScreens.VendorHomeScreen;
+import com.example.utamobilevendingsystem.HomeScreens.OperatorHomeScreen;
 import com.example.utamobilevendingsystem.domain.UserCredentials;
-import com.example.utamobilevendingsystem.domain.UserDetails;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -45,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         register = findViewById(R.id.register);
         db= dbHelper.getWritableDatabase();
         login = findViewById(R.id.button);
-        //insert();
+        insert();
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                     }
                     case "Operator": {
-                        Intent myInt = new Intent(LoginActivity.this, VendorHomeScreen.class);
+                        Intent myInt = new Intent(LoginActivity.this, OperatorHomeScreen.class);
                         startActivity(myInt);
                         break;
                     }
@@ -127,18 +118,22 @@ public class LoginActivity extends AppCompatActivity {
         location.put("schedule","2");
         db.insert(Resources.TABLE_LOCATION,null, location);
         location.put("location_id","4");
-        location.put("name","S Oak & UTA Blvd");
+        location.put("name","Cooper & W Mitchell");
         location.put("schedule","3");
         db.insert(Resources.TABLE_LOCATION,null, location);
         location.put("location_id","5");
+        location.put("name","S Oak & UTA Blvd");
+        location.put("schedule","2");
+        db.insert(Resources.TABLE_LOCATION,null, location);
+        location.put("location_id","6");
         location.put("name","Spaniolo & W 1st");
         location.put("schedule","4");
         db.insert(Resources.TABLE_LOCATION,null, location);
-        location.put("location_id","6");
+        location.put("location_id","7");
         location.put("name","Spaniolo & W Mitchell");
         location.put("schedule","2");
         db.insert(Resources.TABLE_LOCATION,null, location);
-        location.put("location_id","7");
+        location.put("location_id","8");
         location.put("name","S Center & W Mitchell");
         location.put("schedule","1");
         db.insert(Resources.TABLE_LOCATION,null, location);
@@ -204,6 +199,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
         editor.putInt("userid",(c1.getInt((c1.getColumnIndex(Resources.USER_DETAILS_ID)))));
         editor.putInt("utaid",(c1.getInt((c1.getColumnIndex(Resources.USER_DETAILS_UTA_ID)))));
+        editor.putString("userRole",userRole);
         editor.putString("address",(c1.getString((c1.getColumnIndex(Resources.USER_DETAILS_ADDRESS)))));
         editor.putString("username",(c1.getString((c1.getColumnIndex(Resources.USER_DETAILS_USERNAME)))));
         editor.putString("city",(c1.getString((c1.getColumnIndex(Resources.USER_DETAILS_CITY)))));

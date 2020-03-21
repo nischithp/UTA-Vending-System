@@ -50,7 +50,7 @@ public class Resources {
     public static final String ORDER_ITEM_QUANTITY = "order_item_quantity";
     public static final String ORDER_ITEM_PRICE = "order_item_price"; // Product of item price and quantity
     public static final String ORDER_STATUS_ID = "order_status_id"; // foreign KEY -> STATUS_ID
-
+    public static final String ORDER_VEHICLE_ID = "order_vehicle_id"; //foreign key -> vehicle - vehicle id
     // STATUS
     public static final String TABLE_STATUS = "status";
     public static final String STATUS_ID = "status_id";
@@ -108,7 +108,7 @@ public class Resources {
             + ")";
 
     public static final String CREATE_TABLE_USER_DETAILS = "CREATE TABLE IF NOT EXISTS " + TABLE_USER_DETAILS
-            + "(" + USER_DETAILS_ID + " INTEGER, "
+            + "(" + USER_DETAILS_ID + " INTEGER PRIMARY KEY, "
             + USER_DETAILS_USERNAME + " TEXT, "
             + USER_DETAILS_FNAME + " TEXT, "
             + USER_DETAILS_LNAME + " TEXT, "
@@ -177,12 +177,14 @@ public class Resources {
             + ")";
 
     public static final String CREATE_TABLE_ORDER = "CREATE TABLE IF NOT EXISTS " + TABLE_ORDER
-            + "(" + ORDER_ID + " INTEGER PRIMARY KEY,"
+            + "(" + ORDER_ID + " INTEGER, "
             + ORDER_ITEM_ID + " INTEGER, "
+            + ORDER_VEHICLE_ID + " INTEGER, "
             + ORDER_ITEM_QUANTITY + " INTEGER, "
             + ORDER_ITEM_PRICE + " INTEGER, "
             + ORDER_STATUS_ID + " INTEGER, "
             + "CONSTRAINT fk_table_order_item FOREIGN KEY ("+ORDER_ITEM_ID+") REFERENCES "+ TABLE_ITEM+"(" +ITEM_ID+"), "
+            + "CONSTRAINT fk_table_order_vehicle FOREIGN KEY ("+ORDER_VEHICLE_ID+") REFERENCES "+ TABLE_VEHICLE+"(" +VEHICLE_ID+"), "
             + "CONSTRAINT fk_table_order_status FOREIGN KEY ("+ORDER_STATUS_ID+") REFERENCES "+ TABLE_STATUS+"(" +STATUS_ID+")"
             + ")";
 

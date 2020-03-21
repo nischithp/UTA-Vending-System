@@ -14,17 +14,17 @@
         <activity android:name=".LocationScreen" />
         <activity android:name=".ChangePassword" />
         <activity
-            android:name=".HomeScreens.VendorHomeScreen"
+            android:name=".HomeScreens.OperatorHomeScreen"
             android:label="@string/title_activity_vendor_home_screen"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".HomeScreens.ManagerHomeScreen"
             android:label="@string/title_activity_manager_home_screen"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".HomeScreens.UserHomeScreen"
             android:label="@string/title_activity_user_home_screen"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".RegistrationActivity" />

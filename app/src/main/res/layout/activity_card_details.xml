@@ -22,19 +22,30 @@
         android:id="@+id/totalPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Total: "
+        android:text="Cart Total: "
         android:textSize="20sp"
         android:layout_marginTop="30dp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimaryDark"
         android:layout_marginStart="10dp"
         />
+    <TextView
+        android:id="@+id/taxAmt"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:text="Tax: "
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_height="wrap_content"/>
+
 
     <EditText
         android:id="@+id/cardNumber"
         android:layout_width="364dp"
         android:layout_height="58dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="130dp"
         android:layout_marginStart="20dp"
         android:hint="Enter your card number"
         android:inputType="number"
@@ -81,7 +92,6 @@
         android:background="@color/colorPrimaryDark"
         android:textColor="#FFFF"
         android:text="Validate" />
-
 
 
 </LinearLayout>
