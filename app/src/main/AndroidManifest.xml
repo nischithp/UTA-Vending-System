@@ -9,8 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".OperatorOrderDetails"></activity>
-        <activity android:name=".CardDetails" />
+        <activity android:name=".CardDetails"></activity>
         <activity android:name=".UserOrder" />
         <activity android:name=".LocationScreen" />
         <activity android:name=".ChangePassword" />
@@ -26,7 +25,7 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".HomeScreens.OperatorHomeScreen"
-            android:label="Operator Home Screen"
+            android:label="@string/title_activity_vendor_home_screen"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
@@ -48,6 +47,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".UpdateLocationSchedule" />
 
         <meta-data
             android:name="preloaded_fonts"

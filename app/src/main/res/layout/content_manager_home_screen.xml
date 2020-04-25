@@ -102,5 +102,18 @@
             android:layout_marginLeft="100dp"
             android:background="@color/colorPrimaryDark"
             android:text="VIEW OPERATORS/SCHEDULES" />
+
+
+
     </LinearLayout>
+    <Button
+        android:id="@+id/updatelocation_schedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="60dp"
+
+        android:background="@color/colorPrimaryDark"
+        android:text="UPDATE LOCATION SCHEDULE" />
+
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
@@ -46,16 +47,19 @@ public class LoginActivity extends AppCompatActivity {
                 switch (fetch(username, password)) {
                     case "User": {
                         Intent myInt = new Intent(LoginActivity.this, UserHomeScreen.class);
+                        Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
                         startActivity(myInt);
                         break;
                     }
                     case "Operator": {
                         Intent myInt = new Intent(LoginActivity.this, OperatorHomeScreen.class);
+                        Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
                         startActivity(myInt);
                         break;
                     }
                     case "Manager": {
                         Intent myInt = new Intent(LoginActivity.this, ManagerHomeScreen.class);
+                        Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
                         startActivity(myInt);
                         break;
                     }

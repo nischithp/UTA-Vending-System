@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.domain.UserDetails;
 
@@ -144,6 +145,7 @@ public class OperatorList extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

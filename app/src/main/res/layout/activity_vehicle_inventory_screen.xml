@@ -151,9 +151,10 @@
 
     <Button
         android:id="@+id/updateInventoryBtn"
-        android:layout_marginTop="20dp"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Update Inventory" />
+        android:layout_marginTop="20dp"
+        android:text="Update Inventory"
+        android:visibility="visible" />
 </LinearLayout>

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.HomeScreens.OperatorHomeScreen;
 import com.example.utamobilevendingsystem.users.UserOrderDetailsAdapter;
@@ -118,6 +119,7 @@ public class OperatorOrderDetails extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(OperatorOrderDetails.this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

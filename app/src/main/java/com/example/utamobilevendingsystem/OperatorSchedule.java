@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class OperatorSchedule extends AppCompatActivity {
 
@@ -78,6 +79,7 @@ public class OperatorSchedule extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

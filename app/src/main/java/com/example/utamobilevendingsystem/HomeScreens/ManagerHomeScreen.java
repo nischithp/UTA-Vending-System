@@ -11,6 +11,7 @@ import com.example.utamobilevendingsystem.ManagerOrderDetails;
 import com.example.utamobilevendingsystem.OperatorDetails;
 import com.example.utamobilevendingsystem.OperatorList;
 import com.example.utamobilevendingsystem.OperatorScheduleList;
+import com.example.utamobilevendingsystem.UpdateLocationSchedule;
 import com.example.utamobilevendingsystem.users.UserOrderDetails;
 import com.example.utamobilevendingsystem.VehicleScreen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.R;
 
@@ -59,6 +61,14 @@ public class ManagerHomeScreen extends AppCompatActivity {
                 openOperatorlist();
             }
         });
+        VIEW_SCHEDULE= (Button) findViewById(R.id.updatelocation_schedule);
+        VIEW_SCHEDULE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewschedule();
+            }
+        });
+
     }
 
     private void setUserProfile() {
@@ -130,7 +140,11 @@ public class ManagerHomeScreen extends AppCompatActivity {
     }
 
     private void logout() {
-        Intent logout = new Intent(ManagerHomeScreen.this, LoginActivity.class);
+        SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+        Intent logout = new Intent(getApplicationContext(), LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
     public void openOperatorlist(){
@@ -140,7 +154,7 @@ public class ManagerHomeScreen extends AppCompatActivity {
     }
     public void viewschedule(){
 
-        Intent intent= new Intent(this, OperatorScheduleList.class );
+        Intent intent= new Intent(this, UpdateLocationSchedule.class );
         startActivity(intent );
     }
 

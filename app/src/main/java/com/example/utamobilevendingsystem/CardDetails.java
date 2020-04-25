@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.HomeScreens.UserHomeScreen;
 import com.example.utamobilevendingsystem.domain.CardType;
@@ -37,6 +38,7 @@ public class CardDetails extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_card_details);
         setContentView(R.layout.activity_card_details);
         Intent newint = getIntent();
         userId=newint.getIntExtra("uid",0);
@@ -148,6 +150,7 @@ public class CardDetails extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

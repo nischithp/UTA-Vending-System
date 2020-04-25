@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.utamobilevendingsystem.domain.Status;
 import com.example.utamobilevendingsystem.domain.UserDetails;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class OperatorDetails extends AppCompatActivity {
 
@@ -120,6 +121,7 @@ public class OperatorDetails extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

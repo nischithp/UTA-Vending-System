@@ -34,11 +34,17 @@ public class VehicleInventoryScreen extends AppCompatActivity {
     EditText swichAvl, drinksAvl, snacksAvl;
     Button updateInventoryBtn;
 
-    String vehicleID;
+    String vehicleID,flag;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vehicle_inventory_screen);
+
+        flag = getIntent().getStringExtra("flag_btn");
+        updateInventoryBtn=findViewById(R.id.updateInventoryBtn);
+        if(flag.equals("1")){   //Disabling for operator view
+            updateInventoryBtn.setEnabled(false);
+        }
 
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -47,6 +53,9 @@ public class VehicleInventoryScreen extends AppCompatActivity {
         drinksAvl = findViewById(R.id.drinksAvl);
         snacksAvl = findViewById(R.id.snacksAvl);
         updateInventoryBtn = findViewById(R.id.updateInventoryBtn);
+
+
+
 
         vehicleID  = getIntent().getStringExtra("vehicleID");
         Cursor c = db.rawQuery(VEHICLE_INVENTORY_QUERY, new String[] {vehicleID});

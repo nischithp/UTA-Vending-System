@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.HomeScreens.UserHomeScreen;
 import com.example.utamobilevendingsystem.domain.Status;
@@ -188,6 +189,7 @@ public class OrderConfirmation extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

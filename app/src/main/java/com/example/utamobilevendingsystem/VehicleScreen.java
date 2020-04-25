@@ -65,6 +65,8 @@ public class VehicleScreen extends AppCompatActivity {
                 TextView tv = view.findViewById(R.id.vehicleID);
                 Intent intent = new Intent(VehicleScreen.this,VehicleDetailsScreen.class);
                 intent.putExtra("vehicleID", tv.getText().toString());
+                intent.putExtra("flag", "2");   //sending a flag value of 2 as manager view
+
                 startActivity(intent);
             }
         });
@@ -117,8 +119,31 @@ public class VehicleScreen extends AppCompatActivity {
     }
 
     private void viewOrders() {
-        Intent myint = new Intent(this, OrderDetails.class);
-        startActivity(myint);
+        SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
+        String role = preferences.getString("userRole","");
+        if (role == "user"){
+
+            role= role+"OrderDetails";
+            try {
+                Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users."+role);
+                Intent homeIntent = new Intent(this, cls);
+                startActivity(homeIntent);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+
+            role= role+"OrderDetails";
+            try {
+                Class<?> cls = Class.forName("com.example.utamobilevendingsystem."+role);
+                Intent homeIntent = new Intent(this, cls);
+                startActivity(homeIntent);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void logout() {

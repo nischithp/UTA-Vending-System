@@ -35,15 +35,20 @@ public class VehicleDetailsScreen extends AppCompatActivity {
     Button viewInventory;
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
-    TextView tvNameDesc, tvLocationDesc,tvVehicleTypeDesc,tvOperatorDesc,tvScheduleDesc,tvTotalRevenueDesc;
+    TextView tvNameDesc, tvLocationDesc,tvVehicleTypeDesc,tvOperatorDesc,tvScheduleDesc,tvTotalRevenueDesc,tvTotalRevenue,tvAvaiablility,v_name;
     Switch toggleAvailability;
-    String vehicleID;
+    String vehicleID,Operator_name;
+    String flag="";
+    Button UpdateInventorybtn;
+
+
     final int OPERATOR_REQUEST_CODE = 1111;
     final int LOCATION_REQUEST_CODE = 2222;
 
     final String VEHICLE_DETAILS_SCREEN_QUERY = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
             "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
             "LEFT JOIN user_details u on v.user_id = u.user_id WHERE v.vehicle_id = ?";
+
 
     final String VEHICLE_TOTAL_REVENUE = "SELECT sum(O.order_item_price) FROM orders O LEFT JOIN vehicle V ON O.order_vehicle_id=V.vehicle_id WHERE O.order_vehicle_id = ? GROUP BY O.order_id";
 
@@ -52,8 +57,20 @@ public class VehicleDetailsScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vehicle_details_screen);
+        flag = getIntent().getStringExtra("flag");
 
+        setContentView(R.layout.activity_vehicle_details_screen);
+        if(flag.equals("1")){
+            tvTotalRevenueDesc=findViewById(R.id.tvTotalRevenueDesc);
+            tvTotalRevenue=findViewById(R.id.tvTotalRevenue);
+            tvAvaiablility=findViewById(R.id.tvAvaiablility);
+            toggleAvailability=findViewById(R.id.switchAvaiability);
+
+            tvAvaiablility.setEnabled(false);   //Disabling for operator view
+            tvTotalRevenue.setVisibility(View.GONE);   //hiding for operator view
+            tvTotalRevenueDesc.setVisibility(View.GONE);    //hiding for operator view
+            toggleAvailability.setEnabled(false);   //Disabling for operator view
+        }
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
 
@@ -65,31 +82,66 @@ public class VehicleDetailsScreen extends AppCompatActivity {
         tvTotalRevenueDesc = findViewById(R.id.tvTotalRevenueDesc);
         toggleAvailability = findViewById(R.id.switchAvaiability);
         vehicleID = getIntent().getStringExtra("vehicleID");
+        v_name=findViewById(R.id.tvNameDesc);
 
-        Cursor c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY, new String[]{vehicleID});
 
-        if (c.getCount() > 0){
+
+        Cursor c,Get_Vehicle_id;
+        if (flag.equals("1")) {     //condition check for Operator view
+            Operator_name = getIntent().getStringExtra("OPERATOR_VEHICLE");
+            String[] Operator_name1 = Operator_name.split(": ");
+            String name_opr = Operator_name1[1];   //storing operator name
+
+            String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
+                    "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
+                    "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.first_name =\"" + name_opr + "\"";    //Query for getting all details of the operator from DB
+            System.out.println("--------------------------------------------\n\n\n\n\n\n" + VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR);
+            c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
+
+//            String[] vehicle_name1 = vehicleID.split("");
+//            String name_opr = Operator_name1[1];
+
+
+
+        } else {   //Query to be run for Manager view
+            c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY, new String[]{vehicleID});
+
+        }
+
+
+        if (c.getCount() > 0) {
             c.moveToFirst();
-            for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
+            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 tvNameDesc.setText(c.getString(c.getColumnIndex(Resources.VEHICLE_NAME)));
                 tvLocationDesc.setText(c.getString(c.getColumnIndex(Resources.LOCATION_NAME)) == null ? Status.UNASSIGNED.getDescription() : c.getString(c.getColumnIndex(Resources.LOCATION_NAME)));
-                tvVehicleTypeDesc.setText(c.getString(c.getColumnIndex(Resources.VEHICLE_TYPE)).contains("Cart")? VehicleType.CART.getDescription(): VehicleType.FOOD_TRUCK.getDescription());
+                tvVehicleTypeDesc.setText(c.getString(c.getColumnIndex(Resources.VEHICLE_TYPE)).contains("Cart") ? VehicleType.CART.getDescription() : VehicleType.FOOD_TRUCK.getDescription());
                 tvOperatorDesc.setText(c.getString(c.getColumnIndex(Resources.USER_DETAILS_FNAME)) == null ? Status.UNASSIGNED.getDescription() : c.getString(c.getColumnIndex(Resources.USER_DETAILS_FNAME)));
-                tvScheduleDesc.setText(("".equalsIgnoreCase(c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME))) ||c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME)) == null) ? Status.UNASSIGNED.getDescription() : c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME)));
+                tvScheduleDesc.setText(("".equalsIgnoreCase(c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME))) || c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME)) == null) ? Status.UNASSIGNED.getDescription() : c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME)));
                 toggleAvailability.setChecked(c.getString(c.getColumnIndex(Resources.VEHICLE_AVAILABILITY)).equalsIgnoreCase(Status.AVAILABLE.getDescription()) ? true : false);
             }
         }
-        c = db.rawQuery(VEHICLE_TOTAL_REVENUE, new String[]{vehicleID});
 
-        float totalCost = 0;
-        if (c.getCount() > 0) {
-            while (c.moveToNext()) {
-                totalCost += Float.valueOf(c.getString(0)) * 1.0825;
+        if(flag.equals("1")){    //condition check for Operator view
+            String a=v_name.getText().toString();
+
+            Get_Vehicle_id=db.rawQuery("select vehicle_id from vehicle where name=\""+v_name.getText().toString()+"\"",null);
+            while (Get_Vehicle_id.moveToNext()) {
+                vehicleID = Get_Vehicle_id.getString(Get_Vehicle_id.getColumnIndex("vehicle_id"));
             }
         }
-        DecimalFormat df = new DecimalFormat("####0.00");
-        tvTotalRevenueDesc.setText(String.valueOf(df.format(totalCost)));
 
+        if(flag.equals("2")){    //condition check for Manager view
+            c = db.rawQuery(VEHICLE_TOTAL_REVENUE, new String[]{vehicleID});
+
+            float totalCost = 0;
+            if (c.getCount() > 0) {
+                while (c.moveToNext()) {
+                    totalCost += Float.valueOf(c.getString(0)) * 1.0825;
+                }
+            }
+            DecimalFormat df = new DecimalFormat("####0.00");
+            tvTotalRevenueDesc.setText(String.valueOf(df.format(totalCost)));
+        }
         toggleAvailability.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -102,11 +154,22 @@ public class VehicleDetailsScreen extends AppCompatActivity {
             }
         });
         viewInventory= findViewById(R.id.viewInventoryBtn);
+        UpdateInventorybtn=(Button)findViewById(R.id.updateInventoryBtn);
+
         viewInventory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent myint = new Intent(VehicleDetailsScreen.this,VehicleInventoryScreen.class);
-                myint.putExtra("vehicleID", vehicleID);
+                if(flag.equals("2")){
+                    myint.putExtra("vehicleID", vehicleID);
+                    myint.putExtra("flag_btn","2");   //sending flag value as 2 if manager view
+
+                }
+                else{
+                    myint.putExtra("vehicleID", vehicleID);
+                    myint.putExtra("flag_btn","1");   //sending flag value as 1 if operator view
+
+                }
                 startActivity(myint);
             }
         });
@@ -132,27 +195,48 @@ public class VehicleDetailsScreen extends AppCompatActivity {
             }
         });
 
-        tvScheduleDesc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(tvLocationDesc.getText().toString().equals(Status.UNASSIGNED.getDescription())){
-                    Toast.makeText(getApplicationContext(), "Please Assign location before setting the schedule..!", Toast.LENGTH_SHORT).show();
-                } else {
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(VehicleDetailsScreen.this, new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            Cursor c = db.rawQuery(LOCATION_SCHEDULE_QUERY,  new String[] {tvLocationDesc.getText().toString()});
-                            c.moveToFirst();
-                            int locationSchedule = c.getInt(c.getColumnIndex(Resources.LOCATION_SCHEDULE));
-                            int closingTime = hourOfDay+locationSchedule;
-                            tvScheduleDesc.setText(hourOfDay + ":" + (minute < 10? "0"+minute : minute) +" - "+ closingTime +":" + (minute < 10? "0"+minute : minute));
-                            updateVehicleScheduleTime(hourOfDay, minute, closingTime);
-                        }
-                    }, 0, 0, true);
-                    timePickerDialog.show();
+        if(flag.equals("2")) {  //for manager view only
+            tvScheduleDesc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (tvLocationDesc.getText().toString().equals(Status.UNASSIGNED.getDescription())) {
+                        Toast.makeText(getApplicationContext(), "Please Assign location before setting the schedule..!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(VehicleDetailsScreen.this, new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                if (hourOfDay < 9) {
+                                    AlertDialog.Builder alert = new AlertDialog.Builder(VehicleDetailsScreen.this);
+                                    alert.setTitle("Location Schedule Time");
+                                    alert.setMessage("Schedule Time should start from 9AM");
+                                    alert.setPositiveButton("OK", null);
+                                    alert.show();
+                                } else {
+                                    Cursor c = db.rawQuery(LOCATION_SCHEDULE_QUERY, new String[]{tvLocationDesc.getText().toString()});
+                                    c.moveToFirst();
+                                    int locationSchedule = c.getInt(c.getColumnIndex(Resources.LOCATION_SCHEDULE));
+                                    int closingTime = hourOfDay + locationSchedule;
+                                    if (closingTime > 17) {
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(VehicleDetailsScreen.this);
+                                        alert.setTitle("Location Schedule Time");
+                                        alert.setMessage("Closing time exceeding 17:00\nTime Set to 17:00 ");
+                                        alert.setPositiveButton("OK", null);
+                                        alert.show();
+//                                Toast.makeText(getApplicationContext(), "Closing time cannot exceeded 17:00", Toast.LENGTH_SHORT).show();
+                                        closingTime = 17;
+                                    }
+                                    System.out.println("--------------------------------------------CLosing time: " + closingTime);
+
+                                    tvScheduleDesc.setText(hourOfDay + ":" + (minute < 10 ? "0" + minute : minute) + " - " + closingTime + ":" + (minute < 10 ? "0" + minute : minute));
+                                    updateVehicleScheduleTime(hourOfDay, minute, closingTime);
+                                }
+                            }
+                        }, 0, 0, true);
+                        timePickerDialog.show();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override

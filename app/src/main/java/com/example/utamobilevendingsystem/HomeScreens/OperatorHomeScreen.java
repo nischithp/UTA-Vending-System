@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
@@ -14,6 +15,8 @@ import com.example.utamobilevendingsystem.LocationScreen;
 import com.example.utamobilevendingsystem.LoginActivity;
 import com.example.utamobilevendingsystem.OperatorOrderDetails;
 import com.example.utamobilevendingsystem.Resources;
+import com.example.utamobilevendingsystem.VehicleDetailsScreen;
+import com.example.utamobilevendingsystem.VehicleScreen;
 import com.example.utamobilevendingsystem.domain.RegistrationHelper;
 
 import androidx.appcompat.widget.Toolbar;
@@ -31,6 +34,12 @@ import android.widget.Toast;
 import com.example.utamobilevendingsystem.R;
 
 public class OperatorHomeScreen extends RegistrationHelper {
+
+    DatabaseHelper dbHelper;
+    SQLiteDatabase db;
+
+    Cursor c;
+
     String firstName,lastName,username,dob,phoneNummber,email,address,city,state,zip;
     int userID;
     TextView fNameTV,lNameTV,usernameTV,dobTV,phoneNummberTV,emailTV,addressTV,cityTV,stateTV,zipTV;
@@ -39,6 +48,10 @@ public class OperatorHomeScreen extends RegistrationHelper {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.getWritableDatabase();
+
         setContentView(R.layout.activity_vendor_home_screen);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -146,7 +159,19 @@ public class OperatorHomeScreen extends RegistrationHelper {
             }
         });
 
-    }
+
+
+           //condition check for vehicle assigned for operator
+
+
+            String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
+                    "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
+                    "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.first_name =\"" + firstName + "\"";    //Query for getting all details of the operator from DB
+            System.out.println("--------------------------------------------\n\n\n\n\n\n" + VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR);
+            c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
+
+
+        }
 
     private void setUserProfile() {
         fNameTV.setText("First Name: "+firstName);
@@ -186,21 +211,43 @@ public class OperatorHomeScreen extends RegistrationHelper {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu,menu);
+        menu.findItem(R.id.Optr_vehicledetails).setVisible(true);   //making the Vehicle Details tab visible for this page
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
+        String role = preferences.getString("userRole","");
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_location:
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                viewOrders();
+                role= role+"OrderDetails";
+                if (role == "user"){
+                    try {
+                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users."+role);
+                        Intent homeIntent = new Intent(this, cls);
+                        startActivity(homeIntent);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    try {
+                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem."+role);
+                        Intent homeIntent = new Intent(this, cls);
+                        startActivity(homeIntent);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 return true;
-            case R.id.app_bar_search:
-                //startSettings();
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -210,6 +257,7 @@ public class OperatorHomeScreen extends RegistrationHelper {
             case R.id.change_password:
                 changePassword();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -221,11 +269,27 @@ public class OperatorHomeScreen extends RegistrationHelper {
         startActivity(viewOrders);
     }
 
+    private void vehicleSearch_optr() {
+        if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
+            TextView op = findViewById(R.id.fNameTV);   //storing the First name of the operator in the op textview
+            Intent op_vehicle = new Intent(OperatorHomeScreen.this, VehicleDetailsScreen.class);
+            op_vehicle.putExtra("OPERATOR_VEHICLE", op.getText().toString());   //sending the Op FName to the Vehicle Details Screen
+            op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
+
+            startActivity(op_vehicle);
+        }
+        else{
+            Toast.makeText(getApplicationContext(),"No Vehicle assigned for this operator.",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void logout() {
         SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
         editor.clear();
         editor.apply();
-        Intent logout = new Intent(OperatorHomeScreen.this, LoginActivity.class);
+        Intent logout = new Intent(getApplicationContext(), LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 

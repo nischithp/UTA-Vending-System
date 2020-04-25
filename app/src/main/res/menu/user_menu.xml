@@ -13,6 +13,10 @@
         android:title="View Vehicles"
         android:visible="false"/>
     <item
+        android:id="@+id/Optr_vehicledetails"
+        android:title="Vehicle Details"
+        android:visible="false" />
+    <item
         android:id="@+id/change_password"
         android:title="Change Password" />
     <item

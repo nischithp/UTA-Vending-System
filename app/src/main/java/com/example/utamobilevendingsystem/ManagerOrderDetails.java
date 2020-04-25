@@ -14,9 +14,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
-import com.example.utamobilevendingsystem.users.UserOrderDetails;
 import com.example.utamobilevendingsystem.users.UserOrderDetailsAdapter;
 
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ public class ManagerOrderDetails extends AppCompatActivity {
     ArrayList<String> orderItemQuantity = new ArrayList<>();
     ArrayList<String> orderItemPrice = new ArrayList<>();
     ArrayList<String> orderStatusID = new ArrayList<>();
+    TextView TotalRevenue_Manager;
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
 
@@ -41,8 +42,21 @@ public class ManagerOrderDetails extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         db= dbHelper.getReadableDatabase();
         getData();
+        getTotalRevenue();
         initRecyclerView();
     }
+
+    //addition of extra code
+    private void getTotalRevenue() {
+        TotalRevenue_Manager = findViewById(R.id.TotalRevenue_Manager);
+        Cursor cursor = db.rawQuery("select  sum(order_item_price) as totalrevenue from orders", null);
+        while (cursor.moveToNext()) {
+            String total_Rev = cursor.getString(cursor.getColumnIndex("totalrevenue"));
+            Double total_rev_tax = 1.0825 * Double.parseDouble(total_Rev);
+            TotalRevenue_Manager.setText(String.valueOf(total_rev_tax));
+        }
+    }
+
 
     private void getData() {
         Log.i(TAG, "ManagerOrderDetails: getData");
@@ -117,6 +131,7 @@ public class ManagerOrderDetails extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(ManagerOrderDetails.this, LoginActivity.class);
+        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 
