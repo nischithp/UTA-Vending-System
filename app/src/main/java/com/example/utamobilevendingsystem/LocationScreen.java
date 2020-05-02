@@ -11,9 +11,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
+import com.example.utamobilevendingsystem.HomeScreens.OperatorHomeScreen;
 import com.example.utamobilevendingsystem.HomeScreens.UserHomeScreen;
 import com.example.utamobilevendingsystem.domain.Status;
 
@@ -21,12 +24,12 @@ public class LocationScreen extends AppCompatActivity {
 
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
-    String vehicleID;
-
+    String vehicleID,screen_ref;
+    Button VIEW_SCHEDULE;
     TextView cooperUtaTV,nedderGreekTV,davisMitchellTV,cooperMitchellTV,oakUtaTV,spanioloWTV,spanioloMitchellTv,centerMitchellTV, removeAllocationTV;
     String cooperUta, neederGreek,davisMitchell,cooperMitchell,oakUta,spanioloW,spanioloMithcell,centerMitchell,removeAllocation;
-
     boolean isCallingActivityVehicleDetailScreen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,7 @@ public class LocationScreen extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
         vehicleID = getIntent().getStringExtra("vehicleID");
+        screen_ref=getIntent().getStringExtra("screen_ref");
         if(null != getIntent().getStringExtra("callingActivity")){
             isCallingActivityVehicleDetailScreen = (getIntent().getStringExtra("callingActivity")).contains("VehicleDetailsScreen") ? true:false;
         }
@@ -47,6 +51,8 @@ public class LocationScreen extends AppCompatActivity {
         spanioloMitchellTv= findViewById(R.id.spanioloMitchellTv);
         centerMitchellTV= findViewById(R.id.centerMitchellTV);
         removeAllocationTV = findViewById(R.id.removeAllocationTV);
+
+        VIEW_SCHEDULE= findViewById(R.id.updatelocation_schedule);
 
         if(isCallingActivityVehicleDetailScreen){
             removeAllocationTV.setVisibility(View.VISIBLE);
@@ -66,6 +72,25 @@ public class LocationScreen extends AppCompatActivity {
         if(role!=null && role.equals("User") || isCallingActivityVehicleDetailScreen) {
             onClicks();
         }
+        if(role.equals("Manager")){
+            VIEW_SCHEDULE.setVisibility(View.VISIBLE);
+        }
+        if(screen_ref!=(null)) {
+            if (screen_ref.equals("hidebutton")) {
+                VIEW_SCHEDULE.setVisibility(View.INVISIBLE);
+                screen_ref = "";
+
+            }
+        }
+
+        VIEW_SCHEDULE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewschedule();
+            }
+        });
+
+
     }
 
     private void onClicks() {
@@ -163,6 +188,12 @@ public class LocationScreen extends AppCompatActivity {
 
     }
 
+    public void viewschedule(){
+
+        Intent intent= new Intent(LocationScreen.this, UpdateLocationSchedule.class );
+        startActivity(intent );
+    }
+
     private void updateVehicleLocation(String locationName,String locationID){
         ContentValues contentValues = new ContentValues();
         contentValues.put(Resources.VEHICLE_LOCATION_ID, locationID);
@@ -176,6 +207,7 @@ public class LocationScreen extends AppCompatActivity {
         finish();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -186,16 +218,36 @@ public class LocationScreen extends AppCompatActivity {
             menu.findItem(R.id.app_bar_search).setVisible(true);
         }
         return true;
-    }
-    @Override
+    }   @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
+        String role = preferences.getString("userRole","");
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_location:
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                viewOrders();
+                role= role+"OrderDetails";
+                if (role == "User"){
+                    try {
+                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users."+role);
+                        Intent homeIntent = new Intent(this, cls);
+                        startActivity(homeIntent);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    try {
+                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem."+role);
+                        Intent homeIntent = new Intent(this, cls);
+                        startActivity(homeIntent);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 return true;
             case R.id.app_bar_search:
                 vehicleSearch();
@@ -204,16 +256,7 @@ public class LocationScreen extends AppCompatActivity {
                 logout();
                 return true;
             case R.id.menu_home:
-                SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-                String role = preferences.getString("userRole","");
-                role= role+"HomeScreen";
-                try {
-                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens."+role);
-                    Intent homeIntent = new Intent(this, cls);
-                    startActivity(homeIntent);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                Homescreen(role);
                 return true;
             case R.id.change_password:
                 changePassword();
@@ -223,32 +266,43 @@ public class LocationScreen extends AppCompatActivity {
         }
     }
 
-    private void vehicleSearch() {
-        Intent myint = new Intent(this, VehicleScreen.class);
-        startActivity(myint);
-    }
-
-    private void viewOrders() {
-        Intent myint = new Intent(this, OrderDetails.class);
-        startActivity(myint);
-    }
-
     private void logout() {
         SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
         editor.clear();
         editor.apply();
-        Intent logout = new Intent(this, LoginActivity.class);
+        Intent logout = new Intent(getApplicationContext(), LoginActivity.class);
         Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 
+    private void vehicleSearch() {
+        Intent myint = new Intent(LocationScreen.this, VehicleScreen.class);
+        startActivity(myint);
+    }
+
+    private void Homescreen(String role) {
+        if (role.equals("Manager")){
+            Intent myint = new Intent(this, ManagerHomeScreen.class);
+            startActivity(myint);
+        }
+        if (role.equals("User")) {
+            Intent myint = new Intent(this, UserHomeScreen.class);
+            startActivity(myint);
+        }
+        if (role.equals("Operator")) {
+            Intent myint = new Intent(this, OperatorHomeScreen.class);
+            startActivity(myint);
+        }
+    }
+
     private void changePassword() {
-        Intent changePasswordIntent = new Intent(this, ChangePassword.class);
+        Intent changePasswordIntent = new Intent(getApplicationContext(), ChangePassword.class);
         startActivity(changePasswordIntent);
     }
 
     private void viewLocationList(){
-        Intent changePasswordIntent = new Intent(this, LocationScreen.class);
+        Intent changePasswordIntent = new Intent(getApplicationContext(), LocationScreen.class);
         startActivity(changePasswordIntent);
     }
+
 }

@@ -40,11 +40,12 @@ public class OperatorHomeScreen extends RegistrationHelper {
 
     Cursor c;
 
-    String firstName,lastName,username,dob,phoneNummber,email,address,city,state,zip;
+    String firstName, lastName, username, dob, phoneNummber, email, address, city, state, zip;
     int userID;
-    TextView fNameTV,lNameTV,usernameTV,dobTV,phoneNummberTV,emailTV,addressTV,cityTV,stateTV,zipTV;
-    EditText emailET,addressET,cityET,stateET,zipET,phoneET,dobET;
+    TextView fNameTV, lNameTV, usernameTV, dobTV, phoneNummberTV, emailTV, addressTV, cityTV, stateTV, zipTV;
+    EditText emailET, addressET, cityET, stateET, zipET, phoneET, dobET;
     Button update;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,22 +57,22 @@ public class OperatorHomeScreen extends RegistrationHelper {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fNameTV = findViewById(R.id.fNameTV);
-        lNameTV= findViewById(R.id.lNameTV);
-        usernameTV= findViewById(R.id.userNameTV);
-        dobTV= findViewById(R.id.dobTV);
-        phoneNummberTV= findViewById(R.id.phoneTV);
-        emailTV= findViewById(R.id.emailTV);
-        addressTV= findViewById(R.id.addressTV);
-        cityTV= findViewById(R.id.cityTV);
-        stateTV= findViewById(R.id.stateTV);
-        zipTV= findViewById(R.id.zipTV);
-        emailET= findViewById(R.id.emailET);
-        addressET= findViewById(R.id.addressET);
-        cityET= findViewById(R.id.cityET);
-        stateET= findViewById(R.id.stateET);
-        zipET= findViewById(R.id.zipET);
-        phoneET= findViewById(R.id.phoneET);
-        dobET= findViewById(R.id.dobET);
+        lNameTV = findViewById(R.id.lNameTV);
+        usernameTV = findViewById(R.id.userNameTV);
+        dobTV = findViewById(R.id.dobTV);
+        phoneNummberTV = findViewById(R.id.phoneTV);
+        emailTV = findViewById(R.id.emailTV);
+        addressTV = findViewById(R.id.addressTV);
+        cityTV = findViewById(R.id.cityTV);
+        stateTV = findViewById(R.id.stateTV);
+        zipTV = findViewById(R.id.zipTV);
+        emailET = findViewById(R.id.emailET);
+        addressET = findViewById(R.id.addressET);
+        cityET = findViewById(R.id.cityET);
+        stateET = findViewById(R.id.stateET);
+        zipET = findViewById(R.id.zipET);
+        phoneET = findViewById(R.id.phoneET);
+        dobET = findViewById(R.id.dobET);
         update = findViewById(R.id.updateProfile);
         fetchSharedPref();
         setUserProfile();
@@ -84,24 +85,24 @@ public class OperatorHomeScreen extends RegistrationHelper {
                 city = getCity(cityET);
                 state = getAddress(stateET);
                 dob = getDateOfBirth(dobET);
-                address=getAddress(addressET);
-                zip=getAddress(zipET);
+                address = getAddress(addressET);
+                zip = getAddress(zipET);
                 boolean flag = true;
-                if(city.length()<1){
+                if (city.length() < 1) {
                     cityET.setError("Enter a City");
-                    flag=false;
+                    flag = false;
                 }
-                if(state.length()<1){
+                if (state.length() < 1) {
                     stateET.setError("Enter a  State");
-                    flag=false;
+                    flag = false;
                 }
-                if(zip.length()<6){
+                if (zip.length() < 6) {
                     stateET.setError("Enter a valid zip");
-                    flag=false;
+                    flag = false;
                 }
-                if(!verifyAddress(address)){
+                if (!verifyAddress(address)) {
                     addressET.setError("Enter an Address");
-                    flag=false;
+                    flag = false;
                 }
                 if (!verifyPhone(phoneNummber)) {
                     phoneET.setError("Enter a valid 10 digit phone number");
@@ -127,27 +128,27 @@ public class OperatorHomeScreen extends RegistrationHelper {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // Continue with delete operation
                                     SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
-                                    editor.putString("address",address);
-                                    editor.putString("city",city);
-                                    editor.putString("state",state);
-                                    editor.putString("email",email);
-                                    editor.putString("phone",phoneNummber);
-                                    editor.putString("dob",dob);
-                                    editor.putString("zip",zip);
+                                    editor.putString("address", address);
+                                    editor.putString("city", city);
+                                    editor.putString("state", state);
+                                    editor.putString("email", email);
+                                    editor.putString("phone", phoneNummber);
+                                    editor.putString("dob", dob);
+                                    editor.putString("zip", zip);
                                     editor.apply();
 
-                                    ContentValues user_details= new ContentValues();
-                                    user_details.put("dob",dob);
-                                    user_details.put("phone",phoneNummber);
-                                    user_details.put("emailid",email);
-                                    user_details.put("address",address);
-                                    user_details.put("city",city);
-                                    user_details.put("state",state);
-                                    user_details.put("zip",zip);
+                                    ContentValues user_details = new ContentValues();
+                                    user_details.put("dob", dob);
+                                    user_details.put("phone", phoneNummber);
+                                    user_details.put("emailid", email);
+                                    user_details.put("address", address);
+                                    user_details.put("city", city);
+                                    user_details.put("state", state);
+                                    user_details.put("zip", zip);
                                     SQLiteDatabase db = DatabaseHelper.getInstance(getApplicationContext()).getWritableDatabase();
-                                    db.update(Resources.TABLE_USER_DETAILS,user_details, "user_id="+userID,null);
-                                    Log.i("Update","Updated");
-                                    Toast.makeText(getApplicationContext(),"Updated Successfully",Toast.LENGTH_SHORT).show();
+                                    db.update(Resources.TABLE_USER_DETAILS, user_details, "user_id=" + userID, null);
+                                    Log.i("Update", "Updated");
+                                    Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_SHORT).show();
                                 }
                             })
 
@@ -160,23 +161,22 @@ public class OperatorHomeScreen extends RegistrationHelper {
         });
 
 
-
-           //condition check for vehicle assigned for operator
-
-
-            String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
-                    "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
-                    "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.first_name =\"" + firstName + "\"";    //Query for getting all details of the operator from DB
-            System.out.println("--------------------------------------------\n\n\n\n\n\n" + VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR);
-            c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
+        //condition check for vehicle assigned for operator
 
 
-        }
+        String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
+                "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
+                "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.first_name =\"" + firstName + "\"";    //Query for getting all details of the operator from DB
+        System.out.println("--------------------------------------------\n\n\n\n\n\n" + VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR);
+        c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
+
+
+    }
 
     private void setUserProfile() {
-        fNameTV.setText("First Name: "+firstName);
-        lNameTV.setText("Last Name: "+lastName);
-        usernameTV.setText("Welcome, "+username);
+        fNameTV.setText("First Name: " + firstName);
+        lNameTV.setText("Last Name: " + lastName);
+        usernameTV.setText("Welcome, " + username);
         dobTV.setText("Date of Birth: ");
         dobET.setText(dob);
         phoneNummberTV.setText("Phone: ");
@@ -195,22 +195,23 @@ public class OperatorHomeScreen extends RegistrationHelper {
 
     private void fetchSharedPref() {
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        firstName =prefs.getString("fname","");
-        lastName =prefs.getString("lname","");
-        username =prefs.getString("username","");
-        dob =prefs.getString("dob","");
-        phoneNummber =prefs.getString("phone","");
-        email =prefs.getString("email","");
-        address =prefs.getString("address","");
-        city =prefs.getString("city","");
-        state =prefs.getString("state","");
-        zip =prefs.getString("zip","");
-        userID= prefs.getInt("userid",0);
+        firstName = prefs.getString("fname", "");
+        lastName = prefs.getString("lname", "");
+        username = prefs.getString("username", "");
+        dob = prefs.getString("dob", "");
+        phoneNummber = prefs.getString("phone", "");
+        email = prefs.getString("email", "");
+        address = prefs.getString("address", "");
+        city = prefs.getString("city", "");
+        state = prefs.getString("state", "");
+        zip = prefs.getString("zip", "");
+        userID = prefs.getInt("userid", 0);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
+        inflater.inflate(R.menu.user_menu, menu);
         menu.findItem(R.id.Optr_vehicledetails).setVisible(true);   //making the Vehicle Details tab visible for this page
         return true;
     }
@@ -277,9 +278,8 @@ public class OperatorHomeScreen extends RegistrationHelper {
             op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
 
             startActivity(op_vehicle);
-        }
-        else{
-            Toast.makeText(getApplicationContext(),"No Vehicle assigned for this operator.",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -298,7 +298,7 @@ public class OperatorHomeScreen extends RegistrationHelper {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(OperatorHomeScreen.this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }

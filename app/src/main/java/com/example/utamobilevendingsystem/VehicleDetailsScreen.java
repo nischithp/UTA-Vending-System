@@ -35,10 +35,10 @@ public class VehicleDetailsScreen extends AppCompatActivity {
     Button viewInventory;
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
-    TextView tvNameDesc, tvLocationDesc,tvVehicleTypeDesc,tvOperatorDesc,tvScheduleDesc,tvTotalRevenueDesc,tvTotalRevenue,tvAvaiablility,v_name;
+    TextView tvNameDesc, tvLocationDesc, tvVehicleTypeDesc, tvOperatorDesc, tvScheduleDesc, tvTotalRevenueDesc, tvTotalRevenue, tvAvaiablility, v_name;
     Switch toggleAvailability;
-    String vehicleID,Operator_name;
-    String flag="";
+    String vehicleID, Operator_name;
+    String flag = "";
     Button UpdateInventorybtn;
 
 
@@ -60,11 +60,11 @@ public class VehicleDetailsScreen extends AppCompatActivity {
         flag = getIntent().getStringExtra("flag");
 
         setContentView(R.layout.activity_vehicle_details_screen);
-        if(flag.equals("1")){
-            tvTotalRevenueDesc=findViewById(R.id.tvTotalRevenueDesc);
-            tvTotalRevenue=findViewById(R.id.tvTotalRevenue);
-            tvAvaiablility=findViewById(R.id.tvAvaiablility);
-            toggleAvailability=findViewById(R.id.switchAvaiability);
+        if (flag.equals("1")) {
+            tvTotalRevenueDesc = findViewById(R.id.tvTotalRevenueDesc);
+            tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+            tvAvaiablility = findViewById(R.id.tvAvaiablility);
+            toggleAvailability = findViewById(R.id.switchAvaiability);
 
             tvAvaiablility.setEnabled(false);   //Disabling for operator view
             tvTotalRevenue.setVisibility(View.GONE);   //hiding for operator view
@@ -82,11 +82,10 @@ public class VehicleDetailsScreen extends AppCompatActivity {
         tvTotalRevenueDesc = findViewById(R.id.tvTotalRevenueDesc);
         toggleAvailability = findViewById(R.id.switchAvaiability);
         vehicleID = getIntent().getStringExtra("vehicleID");
-        v_name=findViewById(R.id.tvNameDesc);
+        v_name = findViewById(R.id.tvNameDesc);
 
 
-
-        Cursor c,Get_Vehicle_id;
+        Cursor c, Get_Vehicle_id;
         if (flag.equals("1")) {     //condition check for Operator view
             Operator_name = getIntent().getStringExtra("OPERATOR_VEHICLE");
             String[] Operator_name1 = Operator_name.split(": ");
@@ -100,7 +99,6 @@ public class VehicleDetailsScreen extends AppCompatActivity {
 
 //            String[] vehicle_name1 = vehicleID.split("");
 //            String name_opr = Operator_name1[1];
-
 
 
         } else {   //Query to be run for Manager view
@@ -121,16 +119,16 @@ public class VehicleDetailsScreen extends AppCompatActivity {
             }
         }
 
-        if(flag.equals("1")){    //condition check for Operator view
-            String a=v_name.getText().toString();
+        if (flag.equals("1")) {    //condition check for Operator view
+            String a = v_name.getText().toString();
 
-            Get_Vehicle_id=db.rawQuery("select vehicle_id from vehicle where name=\""+v_name.getText().toString()+"\"",null);
+            Get_Vehicle_id = db.rawQuery("select vehicle_id from vehicle where name=\"" + v_name.getText().toString() + "\"", null);
             while (Get_Vehicle_id.moveToNext()) {
                 vehicleID = Get_Vehicle_id.getString(Get_Vehicle_id.getColumnIndex("vehicle_id"));
             }
         }
 
-        if(flag.equals("2")){    //condition check for Manager view
+        if (flag.equals("2")) {    //condition check for Manager view
             c = db.rawQuery(VEHICLE_TOTAL_REVENUE, new String[]{vehicleID});
 
             float totalCost = 0;
@@ -145,7 +143,7 @@ public class VehicleDetailsScreen extends AppCompatActivity {
         toggleAvailability.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     updateVehicleAvaiablity(Status.AVAILABLE);
                 } else {
                     updateVehicleAvaiablity(Status.UNAVAILABLE);
@@ -153,49 +151,51 @@ public class VehicleDetailsScreen extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Vehicle availability Updated", Toast.LENGTH_SHORT).show();
             }
         });
-        viewInventory= findViewById(R.id.viewInventoryBtn);
-        UpdateInventorybtn=(Button)findViewById(R.id.updateInventoryBtn);
+        viewInventory = findViewById(R.id.viewInventoryBtn);
+        UpdateInventorybtn = (Button) findViewById(R.id.updateInventoryBtn);
 
         viewInventory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myint = new Intent(VehicleDetailsScreen.this,VehicleInventoryScreen.class);
-                if(flag.equals("2")){
+                Intent myint = new Intent(VehicleDetailsScreen.this, VehicleInventoryScreen.class);
+                if (flag.equals("2")) {
                     myint.putExtra("vehicleID", vehicleID);
-                    myint.putExtra("flag_btn","2");   //sending flag value as 2 if manager view
+                    myint.putExtra("flag_btn", "2");   //sending flag value as 2 if manager view
 
-                }
-                else{
+                } else {
                     myint.putExtra("vehicleID", vehicleID);
-                    myint.putExtra("flag_btn","1");   //sending flag value as 1 if operator view
+                    myint.putExtra("flag_btn", "1");   //sending flag value as 1 if operator view
 
                 }
                 startActivity(myint);
             }
         });
 
+        if (flag.equals("2")) {    //condition check for Manager view
+            tvOperatorDesc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), OperatorList.class);
+                    intent.putExtra("vehicleID", vehicleID);
+                    intent.putExtra("callingActivity", VehicleDetailsScreen.class.toString());
+                    startActivityForResult(intent, OPERATOR_REQUEST_CODE);
+                }
+            });
+        }
 
-        tvOperatorDesc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(getApplicationContext(), OperatorList.class );
-                intent.putExtra("vehicleID", vehicleID);
-                intent.putExtra("callingActivity", VehicleDetailsScreen.class.toString());
-                startActivityForResult(intent, OPERATOR_REQUEST_CODE );
-            }
-        });
+        if (flag.equals("2")) {    //update check for Manager view
+            tvLocationDesc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), LocationScreen.class);
+                    intent.putExtra("vehicleID", vehicleID);
+                    intent.putExtra("callingActivity", VehicleDetailsScreen.class.toString());
+                    startActivityForResult(intent, LOCATION_REQUEST_CODE);
+                }
+            });
+        }
 
-        tvLocationDesc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(getApplicationContext(), LocationScreen.class );
-                intent.putExtra("vehicleID", vehicleID);
-                intent.putExtra("callingActivity", VehicleDetailsScreen.class.toString());
-                startActivityForResult(intent, LOCATION_REQUEST_CODE );
-            }
-        });
-
-        if(flag.equals("2")) {  //for manager view only
+        if (flag.equals("2")) {  //for manager view only
             tvScheduleDesc.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -249,7 +249,7 @@ public class VehicleDetailsScreen extends AppCompatActivity {
 
         if (requestCode == LOCATION_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             tvLocationDesc.setText(data.getStringExtra("locationName"));
-            if(Status.UNASSIGNED.getDescription().equalsIgnoreCase(data.getStringExtra("locationName"))){
+            if (Status.UNASSIGNED.getDescription().equalsIgnoreCase(data.getStringExtra("locationName"))) {
                 tvScheduleDesc.setText(Status.UNASSIGNED.getDescription());
             }
             ContentValues contentValues = new ContentValues();
@@ -259,34 +259,35 @@ public class VehicleDetailsScreen extends AppCompatActivity {
         }
     }
 
-    private void updateVehicleScheduleTime(int hourOfDay, int minute, int closingTime){
+    private void updateVehicleScheduleTime(int hourOfDay, int minute, int closingTime) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Resources.VEHICLE_SCHEDULE_TIME, hourOfDay + ":" + (minute < 10? "0"+minute : minute) +" - "+ closingTime +":" + (minute < 10? "0"+minute : minute));
+        contentValues.put(Resources.VEHICLE_SCHEDULE_TIME, hourOfDay + ":" + (minute < 10 ? "0" + minute : minute) + " - " + closingTime + ":" + (minute < 10 ? "0" + minute : minute));
         db.update(Resources.TABLE_VEHICLE, contentValues, "vehicle_id = ?", new String[]{vehicleID});
         Toast.makeText(getApplicationContext(), "Schedule Updated", Toast.LENGTH_SHORT).show();
     }
 
-    private void updateVehicleAvaiablity(Status status){
+    private void updateVehicleAvaiablity(Status status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Resources.VEHICLE_AVAILABILITY, status.getDescription());
-        if(status.equals(Status.UNAVAILABLE)){
+        if (status.equals(Status.UNAVAILABLE)) {
             contentValues.putNull(Resources.VEHICLE_LOCATION_ID);
             contentValues.putNull(Resources.VEHICLE_SCHEDULE_TIME);
         }
-        db.update(Resources.TABLE_VEHICLE,contentValues, "vehicle_id = ?", new String[] {vehicleID});
+        db.update(Resources.TABLE_VEHICLE, contentValues, "vehicle_id = ?", new String[]{vehicleID});
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
+        inflater.inflate(R.menu.user_menu, menu);
         SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
-        if("Manager".equalsIgnoreCase(role)){
+        String role = preferences.getString("userRole", "");
+        if ("Manager".equalsIgnoreCase(role)) {
             menu.findItem(R.id.app_bar_search).setVisible(true);
         }
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -305,10 +306,10 @@ public class VehicleDetailsScreen extends AppCompatActivity {
                 return true;
             case R.id.menu_home:
                 SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-                String role = preferences.getString("userRole","");
-                role= role+"HomeScreen";
+                String role = preferences.getString("userRole", "");
+                role = role + "HomeScreen";
                 try {
-                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens."+role);
+                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens." + role);
                     Intent homeIntent = new Intent(this, cls);
                     startActivity(homeIntent);
                 } catch (ClassNotFoundException e) {
@@ -322,6 +323,7 @@ public class VehicleDetailsScreen extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void vehicleSearch() {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
@@ -345,7 +347,7 @@ public class VehicleDetailsScreen extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }

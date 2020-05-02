@@ -38,6 +38,7 @@
         <activity android:name=".VehicleDetailsScreen" />
         <activity android:name=".VehicleInventoryScreen" />
         <activity android:name=".OperatorScheduleList" />
+        <activity android:name=".OperatorOrderDetails" />
         <activity android:name=".OperatorSchedule" />
         <activity android:name=".OperatorList" />
         <activity android:name=".SplashScreenActivity">

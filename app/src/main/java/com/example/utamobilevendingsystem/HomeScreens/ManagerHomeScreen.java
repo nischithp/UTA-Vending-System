@@ -32,7 +32,7 @@ import com.example.utamobilevendingsystem.R;
 
 public class ManagerHomeScreen extends AppCompatActivity {
     String fName,lName,username,dob,phoneNummber,email,address,city,state,zip;
-    private Button VIEW_OPTR,VIEW_SCHEDULE;
+    private Button VIEW_OPTR;
     TextView fNameTV,lNameTV,usernameTV,dobTV,phoneNummberTV,emailTV,addressTV,cityTV,stateTV,zipTV;
     MenuItem item;
     @Override
@@ -61,13 +61,7 @@ public class ManagerHomeScreen extends AppCompatActivity {
                 openOperatorlist();
             }
         });
-        VIEW_SCHEDULE= (Button) findViewById(R.id.updatelocation_schedule);
-        VIEW_SCHEDULE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewschedule();
-            }
-        });
+
 
     }
 
@@ -150,11 +144,6 @@ public class ManagerHomeScreen extends AppCompatActivity {
     public void openOperatorlist(){
         Intent intent= new Intent(this, OperatorList.class );
         intent.putExtra("callingActivity", ManagerHomeScreen.class.toString());
-        startActivity(intent );
-    }
-    public void viewschedule(){
-
-        Intent intent= new Intent(this, UpdateLocationSchedule.class );
         startActivity(intent );
     }
 

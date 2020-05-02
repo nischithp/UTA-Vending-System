@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
 import com.example.utamobilevendingsystem.users.UserOrderDetailsAdapter;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class ManagerOrderDetails extends AppCompatActivity {
@@ -53,7 +54,8 @@ public class ManagerOrderDetails extends AppCompatActivity {
         while (cursor.moveToNext()) {
             String total_Rev = cursor.getString(cursor.getColumnIndex("totalrevenue"));
             Double total_rev_tax = 1.0825 * Double.parseDouble(total_Rev);
-            TotalRevenue_Manager.setText(String.valueOf(total_rev_tax));
+            DecimalFormat df = new DecimalFormat("####0.00");
+            TotalRevenue_Manager.setText(String.valueOf(df.format(total_rev_tax)));
         }
     }
 
@@ -100,7 +102,7 @@ public class ManagerOrderDetails extends AppCompatActivity {
                 viewOrders();
                 return true;
             case R.id.app_bar_search:
-                //startSettings();
+                startSettings();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -114,6 +116,11 @@ public class ManagerOrderDetails extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startSettings() {
+        Intent myint = new Intent(this, VehicleScreen.class);
+        startActivity(myint);
     }
 
     private void managerHome() {
@@ -139,6 +146,8 @@ public class ManagerOrderDetails extends AppCompatActivity {
         Intent changePasswordIntent = new Intent(ManagerOrderDetails.this, ChangePassword.class);
         startActivity(changePasswordIntent);
     }
+
+
 
     private void viewLocationList(){
         Intent changePasswordIntent = new Intent(ManagerOrderDetails.this, LocationScreen.class);

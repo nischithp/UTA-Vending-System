@@ -1,7 +1,6 @@
 package com.example.utamobilevendingsystem;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,10 +8,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
-import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
 
 
 public class UpdateLocationSchedule extends AppCompatActivity {
@@ -167,14 +166,7 @@ public class UpdateLocationSchedule extends AppCompatActivity {
                 logout();
                 return true;
             case R.id.menu_home:
-                role= role+"HomeScreen";
-                try {
-                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens"+role);
-                    Intent homeIntent = new Intent(this, cls);
-                    startActivity(homeIntent);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                Homescreen(role);
                 return true;
             case R.id.change_password:
                 changePassword();
@@ -196,6 +188,14 @@ public class UpdateLocationSchedule extends AppCompatActivity {
     private void vehicleSearch() {
         Intent myint = new Intent(UpdateLocationSchedule.this, VehicleScreen.class);
         startActivity(myint);
+    }
+
+    private void Homescreen(String role) {
+        if (role.equals("Manager")){
+            Intent myint = new Intent(UpdateLocationSchedule.this, ManagerHomeScreen.class);
+            startActivity(myint);
+        }
+
     }
 
     private void changePassword() {
