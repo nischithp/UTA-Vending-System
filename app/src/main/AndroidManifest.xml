@@ -13,6 +13,7 @@
         <activity android:name=".UserOrder" />
         <activity android:name=".LocationScreen" />
         <activity android:name=".ChangePassword" />
+        <activity android:name=".OperatorOrderDetails"/>
         <activity android:name=".ManagerOrderDetails" />
         <activity android:name=".users.UserOrderDetails" />
         <activity

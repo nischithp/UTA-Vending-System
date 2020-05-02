@@ -112,8 +112,11 @@ public class OperatorDetails extends AppCompatActivity {
     }
 
     private void viewOrders() {
-        Intent myint = new Intent(this, OrderDetails.class);
-        startActivity(myint);
+        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        String uID = prefs.getString("userid", String.valueOf(0));
+        viewOrders.putExtra("userId", String.valueOf(uID));
+        startActivity(viewOrders);
     }
 
     private void logout() {

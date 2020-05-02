@@ -248,7 +248,6 @@ public class UserHomeScreen extends RegistrationHelper {
         Intent changePasswordIntent = new Intent(UserHomeScreen.this, ChangePassword.class);
         startActivity(changePasswordIntent);
     }
-
     private void viewLocationList(){
         Intent changePasswordIntent = new Intent(UserHomeScreen.this, LocationScreen.class);
         startActivity(changePasswordIntent);

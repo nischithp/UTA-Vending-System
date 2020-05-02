@@ -45,7 +45,7 @@ public class OperatorOrderDetails extends AppCompatActivity {
     private void getData() {
         Log.i(TAG, "OperatorOrderDetails: getData");
 
-        Cursor cursor = db.rawQuery("SELECT O.order_id, sum(O.order_item_quantity), sum(O.order_item_price), O.order_status_id FROM orders O LEFT JOIN vehicle V ON O.order_vehicle_id=V.vehicle_id WHERE V.user_ID = ? GROUP BY O.order_id", new String[]{userID});
+            Cursor cursor = db.rawQuery("SELECT O.order_id, sum(O.order_item_quantity), sum(O.order_item_price), O.order_status_id FROM orders O LEFT JOIN vehicle V ON O.order_vehicle_id=V.location_id WHERE V.user_ID = ? GROUP BY O.order_id", new String[]{userID});
         if (cursor.getCount() >= 1) {
             int i = 0;
             while (cursor.moveToNext()) {
@@ -111,6 +111,9 @@ public class OperatorOrderDetails extends AppCompatActivity {
 
     private void viewOrders() {
         Intent viewOrders = new Intent(OperatorOrderDetails.this, OperatorOrderDetails.class);
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        String uID = prefs.getString("userid", String.valueOf(0));
+        viewOrders.putExtra("userId", String.valueOf(uID));
         startActivity(viewOrders);
     }
 
