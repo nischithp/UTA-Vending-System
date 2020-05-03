@@ -27,9 +27,14 @@ import com.example.utamobilevendingsystem.domain.Payments;
 import com.example.utamobilevendingsystem.domain.UserCart;
 import com.example.utamobilevendingsystem.users.UserOrderDetails;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class UserOrder extends AppCompatActivity {
     SQLiteDatabase db;
@@ -69,40 +74,63 @@ public class UserOrder extends AppCompatActivity {
         placeOrder= findViewById(R.id.placeOrder);
         editor = getSharedPreferences("userCart", MODE_PRIVATE).edit();
         getInventory(locationId);
-        placeOrderMethod();
     }
 
     private void getInventory(int locationId) {
-        String selectQuery = "SELECT "+Resources.VEHICLE_ID+ " FROM " + Resources.TABLE_VEHICLE + " WHERE "
+        String selectQuery = "SELECT "+Resources.VEHICLE_ID+","+ Resources.VEHICLE_SCHEDULE_TIME+ " FROM " + Resources.TABLE_VEHICLE + " WHERE "
                 + Resources.VEHICLE_LOCATION_ID + " = " + locationId;
         Cursor c = db.rawQuery(selectQuery, null);
 
         if (c.getCount() > 0){
             c.moveToFirst();
             int  vehicleID =c.getInt(c.getColumnIndex(Resources.VEHICLE_ID));
+            String schedule =c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME));
+            if(validateTime(schedule)) {
+                editor.putInt("vehicleID", vehicleID);
 
-            editor.putInt("vehicleID",vehicleID);
+                String inventoryQuery = "SELECT * FROM " + Resources.TABLE_VEHICLE_INVENTORY + " WHERE " + Resources.VEHICLE_INVENTORY_VEHICLE_ID + " = " + vehicleID;
+                Cursor c1 = db.rawQuery(inventoryQuery, null);
+                int count = c1.getCount();
 
-            String inventoryQuery= "SELECT * FROM "+ Resources.TABLE_VEHICLE_INVENTORY+ " WHERE " +  Resources.VEHICLE_INVENTORY_VEHICLE_ID + " = " + vehicleID;
-            Cursor c1 = db.rawQuery(inventoryQuery, null);
-            int count= c1.getCount();
-
-            while (count >0){
-                c1.moveToPosition(count-1);
-                int item_id= c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_ITEM_ID));
-                int quantity= c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_QUANTITY));
-                vehicleInventory.put(item_id,quantity);
-                count--;
+                while (count > 0) {
+                    c1.moveToPosition(count - 1);
+                    int item_id = c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_ITEM_ID));
+                    int quantity = c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_QUANTITY));
+                    vehicleInventory.put(item_id, quantity);
+                    count--;
+                }
+                swichAvl.setText(String.valueOf(vehicleInventory.get(1)));
+                drinksAvl.setText(String.valueOf(vehicleInventory.get(2)));
+                snacksAvl.setText(String.valueOf(vehicleInventory.get(3)));
+                placeOrderMethod();
+            } else {
+                Toast.makeText(getApplicationContext(), "The vehicle schedule is between "+schedule+" only!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(UserOrder.this, LocationScreen.class);
+                startActivity(intent);
             }
-            swichAvl.setText(String.valueOf(vehicleInventory.get(1)));
-            drinksAvl.setText(String.valueOf(vehicleInventory.get(2)));
-            snacksAvl.setText(String.valueOf(vehicleInventory.get(3)));
         }
         else{
             onBackPressed();
             Toast.makeText(getApplicationContext(), "No vehicle has been assigned to this location!", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private boolean validateTime(String schedule) {
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        int hour =  Integer.valueOf(currentTime.substring(0,2));
+        int min = Integer.valueOf(currentTime.substring(3));
+        int startTimeHr = Integer.valueOf(schedule.substring(0,2));
+        int startTimeMin = Integer.valueOf(schedule.substring(3,5));
+        int endTimeHr = Integer.valueOf(schedule.substring(8,10));
+        int endTimeMin = Integer.valueOf(schedule.substring(11));
+        if(hour >= startTimeHr &&  hour <= endTimeHr){
+            if(hour == startTimeHr && min < startTimeMin || hour == endTimeHr && min > endTimeMin){
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     private void placeOrderMethod() {
