@@ -14,7 +14,7 @@
         android:visible="false"/>
     <item
         android:id="@+id/Optr_vehicledetails"
-        android:title="View Vehicles"
+        android:title="View Vehicle Details"
         android:visible="false" />
     <item
         android:id="@+id/change_password"
