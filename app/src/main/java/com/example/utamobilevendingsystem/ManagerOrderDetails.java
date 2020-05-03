@@ -131,8 +131,8 @@ public class ManagerOrderDetails extends AppCompatActivity {
     }
 
     private void viewOrders() {
-        Intent viewOrders = new Intent(ManagerOrderDetails.this, ManagerOrderDetails.class);
-        startActivity(viewOrders);
+//        Intent viewOrders = new Intent(ManagerOrderDetails.this, ManagerOrderDetails.class);
+//        startActivity(viewOrders);
     }
 
     private void logout() {
