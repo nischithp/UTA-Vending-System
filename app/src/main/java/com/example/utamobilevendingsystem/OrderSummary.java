@@ -27,28 +27,36 @@ public class OrderSummary extends AppCompatActivity {
     DatabaseHelper dbHelper;
     String TAG = "OrderSummary";
     SQLiteDatabase db;
+    int userID;
+    String role;
     TextView sandwichQuantity, drinkQuantity, snackQuantity;
     TextView sandwichPrice, drinkPrice, snackPrice;
     TextView totalPrice;
     ArrayList<String> orderItemQuantity = new ArrayList<>();
     ArrayList<String> orderItemPrice = new ArrayList<>();
 
+    private void fetchSharedPref() {
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+        role = prefs.getString("userRole", "");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_summary);
         getAndPutDataUsers();
-//        confirmOrder = findViewById(R.id.orderConfirm);
+        fetchSharedPref();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu,menu);
-        SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
         if("Manager".equalsIgnoreCase(role)){
             menu.findItem(R.id.app_bar_search).setVisible(true);
+        }
+        if ("Operator".equalsIgnoreCase(role)) {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         }
         return true;
     }
@@ -60,10 +68,13 @@ public class OrderSummary extends AppCompatActivity {
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                viewOrders();
+                viewOrders(role);
                 return true;
             case R.id.app_bar_search:
                 vehicleSearch();
+                return true;
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -87,17 +98,34 @@ public class OrderSummary extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void vehicleSearch_optr()
+    {
+        Intent op_vehicle = new Intent(this, VehicleDetailsScreen.class);
+        op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
+        startActivity(op_vehicle);
+    }
     private void vehicleSearch() {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
     }
 
-    private void viewOrders() {
-        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
-        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        String uID = prefs.getString("userid", String.valueOf(0));
-        viewOrders.putExtra("userId", String.valueOf(uID));
-        startActivity(viewOrders);
+    private void viewOrders(String role) {
+        if (role.equals("User")) {
+            Intent viewOrders = new Intent(this, UserOrderDetails.class);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
+
+        if (role.equals("Manager")) {
+            Intent myint = new Intent(this, ManagerOrderDetails.class);
+            startActivity(myint);
+        }
+        if(role.equals("Operator")){
+            Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
     }
 
     private void logout() {
@@ -128,7 +156,6 @@ public class OrderSummary extends AppCompatActivity {
         drinkQuantity = findViewById(R.id.drinkQuantity);
         snackQuantity = findViewById(R.id.snackQuantity);
         totalPrice = findViewById(R.id.totalPrice);
-
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);

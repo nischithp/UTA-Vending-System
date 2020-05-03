@@ -1,7 +1,5 @@
 package com.example.utamobilevendingsystem;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,33 +14,23 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.utamobilevendingsystem.domain.UserDetails;
-
 import java.util.ArrayList;
-
 public class OperatorList extends AppCompatActivity {
-
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
     String vehicleID;
-
     final String OPERATOR_LIST_QUERY = "select ud.first_name, ud.last_name, ud.user_id from user_details ud, user_creds uc where ud.user_id=uc.user_id and uc.role = \"Operator\" ORDER BY (ud.last_name) ASC";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_operator_list);
-
         dbHelper = DatabaseHelper.getInstance(this);
         db = dbHelper.getWritableDatabase();
         vehicleID = getIntent().getStringExtra("vehicleID");
-
         ArrayList<UserDetails> operatorList = new ArrayList<>();
         ListView operatorListView = (ListView) findViewById(R.id.lvOperatorList);
-
         Cursor c = db.rawQuery(OPERATOR_LIST_QUERY, null);
-
         if (c.getCount() > 0){
             c.moveToFirst();
             UserDetails user;
@@ -54,10 +42,8 @@ public class OperatorList extends AppCompatActivity {
                 operatorList.add(user);
             }
         }
-
         OperatorListAdapter adapter = new OperatorListAdapter(this, R.layout.activity_operator_list_adapter, operatorList);
         operatorListView.setAdapter(adapter);
-
         if((getIntent().getStringExtra("callingActivity")).contains("ManagerHomeScreen")){
             operatorListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -79,20 +65,18 @@ public class OperatorList extends AppCompatActivity {
                     finish();
                 }
             });
-
         }
     }
-
     private void updateOperatorVehicle(String userID){
         ContentValues contentValues = new ContentValues();
         contentValues.put(Resources.VEHICLE_USER_ID, userID);
         db.update(Resources.TABLE_VEHICLE,contentValues, "vehicle_id = ?", new String[] {vehicleID});
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu,menu);
+        menu.findItem(R.id.app_bar_search).setVisible(true);
         return true;
     }
     @Override
@@ -134,15 +118,10 @@ public class OperatorList extends AppCompatActivity {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
     }
-
     private void viewOrders() {
-        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
-        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        String uID = prefs.getString("userid", String.valueOf(0));
-        viewOrders.putExtra("userId", String.valueOf(uID));
-        startActivity(viewOrders);
+        Intent myint = new Intent(this, ManagerOrderDetails.class);
+        startActivity(myint);
     }
-
     private void logout() {
         SharedPreferences.Editor editor = getSharedPreferences("currUser", MODE_PRIVATE).edit();
         editor.clear();
@@ -151,12 +130,10 @@ public class OperatorList extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
-
     private void changePassword() {
         Intent changePasswordIntent = new Intent(this, ChangePassword.class);
         startActivity(changePasswordIntent);
     }
-
     private void viewLocationList(){
         Intent changePasswordIntent = new Intent(this, LocationScreen.class);
         startActivity(changePasswordIntent);

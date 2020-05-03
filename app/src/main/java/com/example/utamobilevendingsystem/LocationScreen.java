@@ -20,6 +20,7 @@ import com.example.utamobilevendingsystem.HomeScreens.ManagerHomeScreen;
 import com.example.utamobilevendingsystem.HomeScreens.OperatorHomeScreen;
 import com.example.utamobilevendingsystem.HomeScreens.UserHomeScreen;
 import com.example.utamobilevendingsystem.domain.Status;
+import com.example.utamobilevendingsystem.users.UserOrderDetails;
 
 public class LocationScreen extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class LocationScreen extends AppCompatActivity {
     Cursor c, d;
     SQLiteDatabase db;
     int userID;
+    String role;
     String vehicleID, screen_ref;
     Button VIEW_SCHEDULE;
     TextView cooperUtaTV, nedderGreekTV, davisMitchellTV, cooperMitchellTV, oakUtaTV, spanioloWTV, spanioloMitchellTv, centerMitchellTV, removeAllocationTV;
@@ -36,6 +38,7 @@ public class LocationScreen extends AppCompatActivity {
     private void fetchSharedPref() {
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
         userID = prefs.getInt("userid", 0);
+        role = prefs.getString("userRole", "");
     }
 
     @Override
@@ -88,7 +91,6 @@ public class LocationScreen extends AppCompatActivity {
             if (screen_ref.equals("hidebutton")) {
                 VIEW_SCHEDULE.setVisibility(View.INVISIBLE);
                 screen_ref = "";
-
             }
         }
 
@@ -105,7 +107,7 @@ public class LocationScreen extends AppCompatActivity {
                 "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.user_id =\"" + userID + "\"";    //Query for getting all details of the operator from DB
         c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
 
-        }
+    }
 
     private void onClicks() {
         cooperUtaTV.setOnClickListener(v -> {
@@ -149,7 +151,6 @@ public class LocationScreen extends AppCompatActivity {
                 myint.putExtra("id", 4);
                 startActivity(myint);
             }
-
         });
         oakUtaTV.setOnClickListener(v -> {
             if (isCallingActivityVehicleDetailScreen) {
@@ -160,7 +161,6 @@ public class LocationScreen extends AppCompatActivity {
                 myint.putExtra("id", 5);
                 startActivity(myint);
             }
-
         });
         spanioloWTV.setOnClickListener(v -> {
             if (isCallingActivityVehicleDetailScreen) {
@@ -171,7 +171,6 @@ public class LocationScreen extends AppCompatActivity {
                 myint.putExtra("id", 6);
                 startActivity(myint);
             }
-
         });
         spanioloMitchellTv.setOnClickListener(v -> {
             if (isCallingActivityVehicleDetailScreen) {
@@ -221,7 +220,6 @@ public class LocationScreen extends AppCompatActivity {
         finish();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -239,33 +237,13 @@ public class LocationScreen extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole", "");
-        // Handle item selection
+
         switch (item.getItemId()) {
             case R.id.menu_location:
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                role = role + "OrderDetails";
-                if (role == "User") {
-                    try {
-                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users." + role);
-                        Intent homeIntent = new Intent(this, cls);
-                        startActivity(homeIntent);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem." + role);
-                        Intent homeIntent = new Intent(this, cls);
-                        startActivity(homeIntent);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+                viewOrders(role);
                 return true;
             case R.id.app_bar_search:
                 vehicleSearch();
@@ -301,16 +279,31 @@ public class LocationScreen extends AppCompatActivity {
         startActivity(myint);
     }
 
+    private void viewOrders(String role) {
+        if (role.equals("User")) {
+            Intent viewOrders = new Intent(this, UserOrderDetails.class);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
+        if (role.equals("Manager")) {
+            Intent myint = new Intent(this, ManagerOrderDetails.class);
+            startActivity(myint);
+        }
+        if (role.equals("Operator")) {
+            Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
+    }
+
     private void vehicleSearch_optr() {
         if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
             Intent op_vehicle = new Intent(LocationScreen.this, VehicleDetailsScreen.class);
             op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
-
             startActivity(op_vehicle);
         } else {
             Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void Homescreen(String role) {
@@ -339,3 +332,4 @@ public class LocationScreen extends AppCompatActivity {
     }
 
 }
+//tc

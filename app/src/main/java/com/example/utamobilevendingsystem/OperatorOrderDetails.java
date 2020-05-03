@@ -48,24 +48,15 @@ public class OperatorOrderDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_order_details);
         Log.i(TAG, "OperatorOrderDetails: onCreate");
-
-        //if (role.equals("Operator")) {
-            tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
-            tvTotalRevenue_Manager = findViewById(R.id.TotalRevenue_Manager);
-
-
-            tvTotalRevenue.setVisibility(View.GONE);   //Disabling for operator view
-
-            tvTotalRevenue_Manager.setVisibility(View.GONE);   //Disabling for operator view
-       // }
-
-        //userID = getIntent().getStringExtra("userId");
+        tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+        tvTotalRevenue_Manager = findViewById(R.id.TotalRevenue_Manager);
+        tvTotalRevenue.setVisibility(View.GONE);   //Disabling for operator view
+        tvTotalRevenue_Manager.setVisibility(View.GONE);   //Disabling for operator view
         fetchSharedPref();
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getReadableDatabase();
         getData();
         initRecyclerView();
-
         String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
                 "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
                 "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.user_id =\"" + userID + "\"";    //Query for getting all details of the operator from DB
@@ -74,7 +65,6 @@ public class OperatorOrderDetails extends AppCompatActivity {
 
     private void getData() {
         Log.i(TAG, "OperatorOrderDetails: getData");
-
         Cursor cursor = db.rawQuery("SELECT O.order_id, sum(O.order_item_quantity), sum(O.order_item_price), O.order_status_id FROM orders O LEFT JOIN vehicle V ON O.order_vehicle_id=V.location_id WHERE V.user_ID = ? GROUP BY O.order_id", new String[]{String.valueOf(userID)});
         if (cursor.getCount() >= 1) {
             int i = 0;
@@ -108,7 +98,6 @@ public class OperatorOrderDetails extends AppCompatActivity {
         if ("Operator".equalsIgnoreCase(role)) {
             menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         }
-
         return true;
     }
 
@@ -151,21 +140,13 @@ public class OperatorOrderDetails extends AppCompatActivity {
         if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
             Intent op_vehicle = new Intent(OperatorOrderDetails.this, VehicleDetailsScreen.class);
             op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
-
-
             startActivity(op_vehicle);
         } else {
             Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void viewOrders() {
-        Intent viewOrders = new Intent(OperatorOrderDetails.this, OperatorOrderDetails.class);
-        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        String uID = prefs.getString("userid", String.valueOf(0));
-        viewOrders.putExtra("userId", String.valueOf(uID));
-        startActivity(viewOrders);
     }
 
     private void logout() {
@@ -187,3 +168,4 @@ public class OperatorOrderDetails extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 }
+//tc

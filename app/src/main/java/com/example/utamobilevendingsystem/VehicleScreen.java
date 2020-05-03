@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class VehicleScreen extends AppCompatActivity {
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,15 +40,15 @@ public class VehicleScreen extends AppCompatActivity {
         String VEHICLE_LOCATION_QUERY = "select v.vehicle_id, v.name, v.type, v.availability, v.location_id, l.locationName from vehicle v left join location l on v.location_id = l.location_id";
         Cursor c = db.rawQuery(VEHICLE_LOCATION_QUERY, null);
 
-        if (c.getCount() > 0){
+        if (c.getCount() > 0) {
             c.moveToFirst();
             Vehicle vehicle;
-            for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
+            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
                 vehicle = new Vehicle();
                 vehicle.setVehicleId(c.getInt(c.getColumnIndex(Resources.VEHICLE_ID)));
                 vehicle.setVehicleName(c.getString(c.getColumnIndex(Resources.VEHICLE_NAME)));
                 vehicle.setVehicleType("Food Truck".equalsIgnoreCase(c.getString(c.getColumnIndex(Resources.VEHICLE_TYPE))) ? VehicleType.FOOD_TRUCK : VehicleType.CART);
-                vehicle.setAvailability((c.getString(c.getColumnIndex(Resources.VEHICLE_AVAILABILITY)).equalsIgnoreCase(Status.AVAILABLE.getDescription())? Status.AVAILABLE : Status.UNAVAILABLE));
+                vehicle.setAvailability((c.getString(c.getColumnIndex(Resources.VEHICLE_AVAILABILITY)).equalsIgnoreCase(Status.AVAILABLE.getDescription()) ? Status.AVAILABLE : Status.UNAVAILABLE));
                 vehicle.setLocationId(c.getInt(c.getColumnIndex(Resources.VEHICLE_LOCATION_ID)));
                 vehicle.setLocationName(c.getString(c.getColumnIndex(Resources.LOCATION_NAME)));
                 vehicleList.add(vehicle);
@@ -60,7 +61,7 @@ public class VehicleScreen extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView tv = view.findViewById(R.id.vehicleID);
-                Intent intent = new Intent(VehicleScreen.this,VehicleDetailsScreen.class);
+                Intent intent = new Intent(VehicleScreen.this, VehicleDetailsScreen.class);
                 intent.putExtra("vehicleID", tv.getText().toString());
                 intent.putExtra("flag", "2");   //sending a flag value of 2 as manager view
 
@@ -72,9 +73,11 @@ public class VehicleScreen extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
+        inflater.inflate(R.menu.user_menu, menu);
+        menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -88,15 +91,18 @@ public class VehicleScreen extends AppCompatActivity {
             case R.id.app_bar_search:
                 vehicleSearch();
                 return true;
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
+                return true;
             case R.id.menu_logout:
                 logout();
                 return true;
             case R.id.menu_home:
                 SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-                String role = preferences.getString("userRole","");
-                role= role+"HomeScreen";
+                String role = preferences.getString("userRole", "");
+                role = role + "HomeScreen";
                 try {
-                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens."+role);
+                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens." + role);
                     Intent homeIntent = new Intent(this, cls);
                     startActivity(homeIntent);
                 } catch (ClassNotFoundException e) {
@@ -110,6 +116,10 @@ public class VehicleScreen extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void vehicleSearch_optr() {
+    }
+
     private void vehicleSearch() {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
@@ -117,23 +127,22 @@ public class VehicleScreen extends AppCompatActivity {
 
     private void viewOrders() {
         SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
-        if (role == "user"){
+        String role = preferences.getString("userRole", "");
+        if (role == "user") {
 
-            role= role+"OrderDetails";
+            role = role + "OrderDetails";
             try {
-                Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users."+role);
+                Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users." + role);
                 Intent homeIntent = new Intent(this, cls);
                 startActivity(homeIntent);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
 
-            role= role+"OrderDetails";
+            role = role + "OrderDetails";
             try {
-                Class<?> cls = Class.forName("com.example.utamobilevendingsystem."+role);
+                Class<?> cls = Class.forName("com.example.utamobilevendingsystem." + role);
                 Intent homeIntent = new Intent(this, cls);
                 startActivity(homeIntent);
             } catch (ClassNotFoundException e) {
@@ -156,7 +165,7 @@ public class VehicleScreen extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }

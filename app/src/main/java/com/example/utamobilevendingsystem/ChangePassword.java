@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.domain.UserDetails;
+import com.example.utamobilevendingsystem.users.UserOrderDetails;
 
 import java.io.Serializable;
 
@@ -31,10 +32,11 @@ public class ChangePassword extends AppCompatActivity {
 
     EditText passwordET, reEnterPasswordET;
     Button changeBtn;
+
     private void fetchSharedPref() {
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
         userID = prefs.getInt("userid", 0);
-         role = prefs.getString("userRole", "");
+        role = prefs.getString("userRole", "");
 
     }
 
@@ -47,23 +49,23 @@ public class ChangePassword extends AppCompatActivity {
         setContentView(R.layout.activity_change_password);
 
         passwordET = findViewById(R.id.passwordET);
-        reEnterPasswordET  = findViewById(R.id.reEnterPasswordET);
+        reEnterPasswordET = findViewById(R.id.reEnterPasswordET);
         changeBtn = findViewById(R.id.changeBtn);
         changeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String pass = passwordET.getText().toString();
                 String reEnterPass = reEnterPasswordET.getText().toString();
-                if(pass.isEmpty() || reEnterPass.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "Please enter both the fields..!",Toast.LENGTH_SHORT).show();
-                } else if(validatePassword()){
+                if (pass.isEmpty() || reEnterPass.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please enter both the fields..!", Toast.LENGTH_SHORT).show();
+                } else if (validatePassword()) {
                     updatePassword(passwordET.getText().toString());
                     Intent intent = new Intent(ChangePassword.this, LoginActivity.class);
                     startActivity(intent);
                 } else {
                     passwordET.getText().clear();
                     reEnterPasswordET.getText().clear();
-                    Toast.makeText(getApplicationContext(), "Entered Passwords Do Not Match..!!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Entered Passwords Do Not Match..!!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -75,10 +77,10 @@ public class ChangePassword extends AppCompatActivity {
 
     }
 
-    public boolean validatePassword(){
+    public boolean validatePassword() {
         String password = passwordET.getText().toString();
         String reEnterPassword = reEnterPasswordET.getText().toString();
-        if(password.equalsIgnoreCase(reEnterPassword)){
+        if (password.equalsIgnoreCase(reEnterPassword)) {
             return true;
         }
         return false;
@@ -87,13 +89,16 @@ public class ChangePassword extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
-
+        inflater.inflate(R.menu.user_menu, menu);
         if ("Operator".equalsIgnoreCase(role)) {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        }
+        if ("Manager".equalsIgnoreCase(role)) {
             menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         }
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -102,23 +107,28 @@ public class ChangePassword extends AppCompatActivity {
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                viewOrders();
+                viewOrders(role);
                 return true;
             case R.id.app_bar_search:
                 vehicleSearch();
                 return true;
             case R.id.Optr_vehicledetails:
-                vehicleSearch_optr();
+                if ("Operator".equalsIgnoreCase(role)) {
+                    vehicleSearch_optr();
+                }
+                if ("Manager".equalsIgnoreCase(role)) {
+                    vehicleSearch();
+                }
                 return true;
             case R.id.menu_logout:
                 logout();
                 return true;
             case R.id.menu_home:
                 SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-                String role = preferences.getString("userRole","");
-                role= role+"HomeScreen";
+                String role = preferences.getString("userRole", "");
+                role = role + "HomeScreen";
                 try {
-                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens."+role);
+                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens." + role);
                     Intent homeIntent = new Intent(this, cls);
                     startActivity(homeIntent);
                 } catch (ClassNotFoundException e) {
@@ -132,29 +142,39 @@ public class ChangePassword extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void vehicleSearch() {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
     }
+
     private void vehicleSearch_optr() {
         if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
             Intent op_vehicle = new Intent(ChangePassword.this, VehicleDetailsScreen.class);
             op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
-
-
             startActivity(op_vehicle);
         } else {
             Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
         }
-
     }
 
-    private void viewOrders() {
-        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
-        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        userID = prefs.getInt("userid", 0);
-        viewOrders.putExtra("userId", String.valueOf(userID));
-        startActivity(viewOrders);
+    private void viewOrders(String role) {
+        if (role.equals("User")) {
+            Intent viewOrders = new Intent(this, UserOrderDetails.class);
+            SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+            userID = prefs.getInt("userid", 0);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
+        if (role.equals("Manager")) {
+            Intent myint = new Intent(this, ManagerOrderDetails.class);
+            startActivity(myint);
+        }
+        if (role.equals("Operator")) {
+            Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
     }
 
     private void logout() {
@@ -162,7 +182,7 @@ public class ChangePassword extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
-        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 
@@ -171,22 +191,23 @@ public class ChangePassword extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }
 
-    public void updatePassword(String password){
+    public void updatePassword(String password) {
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
 
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        int userID = prefs.getInt("userid",0);
-        Log.i(" userId","user ID  "+userID);
+        int userID = prefs.getInt("userid", 0);
+        Log.i(" userId", "user ID  " + userID);
         ContentValues cv = new ContentValues();
         cv.put(Resources.USER_CREDS_PASSWORD, password);
         String tableName = Resources.TABLE_USER_CREDS;
-        int value = db.update(Resources.TABLE_USER_CREDS,cv ,"user_id = "+ userID, null);
+        int value = db.update(Resources.TABLE_USER_CREDS, cv, "user_id = " + userID, null);
         Toast.makeText(getApplicationContext(), "Password change success.!", Toast.LENGTH_SHORT).show();
     }
 }
+//tc

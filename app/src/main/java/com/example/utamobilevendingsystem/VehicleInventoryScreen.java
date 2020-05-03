@@ -20,15 +20,13 @@ import android.view.MenuItem;
 public class VehicleInventoryScreen extends AppCompatActivity {
 
     final String VEHICLE_INVENTORY_QUERY = "select i.item_name, v.quantity from vehicle_inventory v join item i on v.item_id = i.item_id where v.vehicle_id = ?";
-
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
-
     EditText swichAvl, drinksAvl, snacksAvl;
     Button updateInventoryBtn;
     int userID;
-
-    String vehicleID, flag, role;
+    Cursor c, d;
+    String vehicleID, vehicleID_view, flag, role;
 
     private void fetchSharedPref() {
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
@@ -40,32 +38,38 @@ public class VehicleInventoryScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vehicle_inventory_screen);
-
+        fetchSharedPref();
         flag = getIntent().getStringExtra("flag_btn");
         updateInventoryBtn = findViewById(R.id.updateInventoryBtn);
         if (flag.equals("1")) {   //Disabling for operator view
             updateInventoryBtn.setEnabled(false);
         }
-
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
-
         swichAvl = findViewById(R.id.swichAvl);
         drinksAvl = findViewById(R.id.drinksAvl);
         snacksAvl = findViewById(R.id.snacksAvl);
         updateInventoryBtn = findViewById(R.id.updateInventoryBtn);
-
         if (flag.equals("1")) {   //Disabling for operator view
             swichAvl.setEnabled(false);
             drinksAvl.setEnabled(false);
             snacksAvl.setEnabled(false);
             updateInventoryBtn.setVisibility(View.GONE);
         }
-
-
-        vehicleID = getIntent().getStringExtra("vehicleID");
-        Cursor c = db.rawQuery(VEHICLE_INVENTORY_QUERY, new String[]{vehicleID});
-
+        if (flag.equals("1")) {
+            c = db.rawQuery("SELECT location_id FROM vehicle WHERE user_id=?", new String[]{String.valueOf(userID)});
+            while (c.moveToNext()) {
+                vehicleID_view = c.getString(c.getColumnIndex("location_id"));
+            }
+            d = db.rawQuery("SELECT vehicle_id FROM vehicle WHERE user_id=?", new String[]{String.valueOf(userID)});
+            while (d.moveToNext()) {
+                vehicleID = d.getString(d.getColumnIndex("vehicle_id"));
+            }
+            c = db.rawQuery(VEHICLE_INVENTORY_QUERY, new String[]{vehicleID});
+        } else {
+            vehicleID = getIntent().getStringExtra("vehicleID");
+            c = db.rawQuery(VEHICLE_INVENTORY_QUERY, new String[]{vehicleID});
+        }
         if (c.getCount() > 0) {
             c.moveToFirst();
             for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
@@ -105,7 +109,6 @@ public class VehicleInventoryScreen extends AppCompatActivity {
         db.update(Resources.TABLE_VEHICLE_INVENTORY, contentValues, "item_id = ? and vehicle_id = ?", new String[]{"3", vehicleID});
         Toast.makeText(getApplicationContext(), "Inventory Updated", Toast.LENGTH_SHORT).show();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -167,11 +170,17 @@ public class VehicleInventoryScreen extends AppCompatActivity {
     }
 
     private void viewOrders() {
-        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
-        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        userID = prefs.getInt("userid", 0);
-        viewOrders.putExtra("userId", String.valueOf(userID));
-        startActivity(viewOrders);
+        if (role.equals("Manager")) {
+            Intent myint = new Intent(this, ManagerOrderDetails.class);
+            startActivity(myint);
+        }
+        if (role.equals("Operator")) {
+            Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+            SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+            userID = prefs.getInt("userid", 0);
+            viewOrders.putExtra("userId", String.valueOf(userID));
+            startActivity(viewOrders);
+        }
     }
 
     private void vehicleSearch_optr() {
@@ -198,3 +207,4 @@ public class VehicleInventoryScreen extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 }
+//tc

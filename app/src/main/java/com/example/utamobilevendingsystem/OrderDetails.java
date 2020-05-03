@@ -12,8 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.utamobilevendingsystem.users.UserOrderDetails;
+
 public class OrderDetails extends AppCompatActivity {
     Button placeOrder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,26 +26,27 @@ public class OrderDetails extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openfooddetails();
-
             }
         });
     }
-    public void openfooddetails(){
-        Intent intent =new Intent(this, OrderSummary.class);
-        startActivity(intent );
+
+    public void openfooddetails() {
+        Intent intent = new Intent(this, OrderSummary.class);
+        startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
+        inflater.inflate(R.menu.user_menu, menu);
         SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
-        if("Manager".equalsIgnoreCase(role)){
+        String role = preferences.getString("userRole", "");
+        if ("Manager".equalsIgnoreCase(role)) {
             menu.findItem(R.id.app_bar_search).setVisible(true);
         }
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -61,10 +65,10 @@ public class OrderDetails extends AppCompatActivity {
                 return true;
             case R.id.menu_home:
                 SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-                String role = preferences.getString("userRole","");
-                role= role+"HomeScreen";
+                String role = preferences.getString("userRole", "");
+                role = role + "HomeScreen";
                 try {
-                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens."+role);
+                    Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens." + role);
                     Intent homeIntent = new Intent(this, cls);
                     startActivity(homeIntent);
                 } catch (ClassNotFoundException e) {
@@ -78,13 +82,14 @@ public class OrderDetails extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void vehicleSearch() {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
     }
 
     private void viewOrders() {
-        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+        Intent viewOrders = new Intent(this, UserOrderDetails.class);
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
         String uID = prefs.getString("userid", String.valueOf(0));
         viewOrders.putExtra("userId", String.valueOf(uID));
@@ -96,7 +101,7 @@ public class OrderDetails extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(this, LoginActivity.class);
-        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 
@@ -105,23 +110,8 @@ public class OrderDetails extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }
 }
-
-//    Intent myintent = new Intent(OrderDetails.this,OrderSummary.class);
-//    startActivity(myintent);
-////////
-//    public void onClick(View v) {
-//        openoptrdeatils();
-//    }
-//});
-//
-//        }
-//
-//public void openoptrdeatils(){
-//        Intent intent =new Intent(this, OperatorDetails.class);
-//        startActivity(intent );
-//        }

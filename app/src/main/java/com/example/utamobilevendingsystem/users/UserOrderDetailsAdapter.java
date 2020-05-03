@@ -19,6 +19,7 @@ import com.example.utamobilevendingsystem.OperatorOrderDetails;
 import com.example.utamobilevendingsystem.OrderSummary;
 import com.example.utamobilevendingsystem.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class UserOrderDetailsAdapter extends RecyclerView.Adapter<UserOrderDetailsAdapter.ViewHolder> {
@@ -95,7 +96,9 @@ public class UserOrderDetailsAdapter extends RecyclerView.Adapter<UserOrderDetai
 
             holder.orderID.setText(orderID.get(position));
             holder.orderStatus.setText(orderStatusID.get(position));
-            holder.orderPrice.setText(orderItemPrice.get(position));
+            double totalOrderPrice = Double.valueOf(orderItemPrice.get(position)) * 0.0825 + Double.valueOf(orderItemPrice.get(position));
+            DecimalFormat df = new DecimalFormat("####0.00");
+            holder.orderPrice.setText(String.valueOf(df.format(totalOrderPrice)));
         }
          else if (context.getClass() == ManagerOrderDetails.class){
             holder.parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +115,9 @@ public class UserOrderDetailsAdapter extends RecyclerView.Adapter<UserOrderDetai
             });
             holder.orderID.setText(orderID.get(position));
             holder.orderStatus.setText(orderStatusID.get(position));
-            holder.orderPrice.setText(orderItemPrice.get(position));
+            double totalOrderPrice = Double.valueOf(orderItemPrice.get(position)) * 0.0825 + Double.valueOf(orderItemPrice.get(position));
+            DecimalFormat df = new DecimalFormat("####0.00");
+            holder.orderPrice.setText(String.valueOf(df.format(totalOrderPrice)));
         }
         else if (context.getClass() == OperatorOrderDetails.class){
             holder.parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +134,9 @@ public class UserOrderDetailsAdapter extends RecyclerView.Adapter<UserOrderDetai
             });
             holder.orderID.setText(orderID.get(position));
             holder.orderStatus.setText(orderStatusID.get(position));
-            holder.orderPrice.setText(orderItemPrice.get(position));
+            double totalOrderPrice = Double.valueOf(orderItemPrice.get(position)) * 0.0825 + Double.valueOf(orderItemPrice.get(position));
+            DecimalFormat df = new DecimalFormat("####0.00");
+            holder.orderPrice.setText(String.valueOf(df.format(totalOrderPrice)));
         }
 
 
@@ -152,7 +159,6 @@ public class UserOrderDetailsAdapter extends RecyclerView.Adapter<UserOrderDetai
             orderPrice = itemView.findViewById(R.id.orderPrice);
             orderStatus = itemView.findViewById(R.id.orderStatus);
             parentLayout = itemView.findViewById(R.id.pleaseBaa);
-
         }
     }
 }
