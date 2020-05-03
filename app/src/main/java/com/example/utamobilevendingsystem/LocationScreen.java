@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,12 +24,19 @@ import com.example.utamobilevendingsystem.domain.Status;
 public class LocationScreen extends AppCompatActivity {
 
     DatabaseHelper dbHelper;
+    Cursor c, d;
     SQLiteDatabase db;
-    String vehicleID,screen_ref;
+    int userID;
+    String vehicleID, screen_ref;
     Button VIEW_SCHEDULE;
-    TextView cooperUtaTV,nedderGreekTV,davisMitchellTV,cooperMitchellTV,oakUtaTV,spanioloWTV,spanioloMitchellTv,centerMitchellTV, removeAllocationTV;
-    String cooperUta, neederGreek,davisMitchell,cooperMitchell,oakUta,spanioloW,spanioloMithcell,centerMitchell,removeAllocation;
+    TextView cooperUtaTV, nedderGreekTV, davisMitchellTV, cooperMitchellTV, oakUtaTV, spanioloWTV, spanioloMitchellTv, centerMitchellTV, removeAllocationTV;
+    String cooperUta, neederGreek, davisMitchell, cooperMitchell, oakUta, spanioloW, spanioloMithcell, centerMitchell, removeAllocation;
     boolean isCallingActivityVehicleDetailScreen;
+
+    private void fetchSharedPref() {
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,24 +45,25 @@ public class LocationScreen extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
+        fetchSharedPref();
         vehicleID = getIntent().getStringExtra("vehicleID");
-        screen_ref=getIntent().getStringExtra("screen_ref");
-        if(null != getIntent().getStringExtra("callingActivity")){
-            isCallingActivityVehicleDetailScreen = (getIntent().getStringExtra("callingActivity")).contains("VehicleDetailsScreen") ? true:false;
+        screen_ref = getIntent().getStringExtra("screen_ref");
+        if (null != getIntent().getStringExtra("callingActivity")) {
+            isCallingActivityVehicleDetailScreen = (getIntent().getStringExtra("callingActivity")).contains("VehicleDetailsScreen") ? true : false;
         }
-        cooperUtaTV= findViewById(R.id.cooperUtaTV);
-        nedderGreekTV= findViewById(R.id.nedderGreekTV);
-        davisMitchellTV= findViewById(R.id.davisMitchellTV);
-        cooperMitchellTV= findViewById(R.id.cooperMitchellTV);
-        oakUtaTV= findViewById(R.id.oakUtaTV);
-        spanioloWTV= findViewById(R.id.spanioloWTV);
-        spanioloMitchellTv= findViewById(R.id.spanioloMitchellTv);
-        centerMitchellTV= findViewById(R.id.centerMitchellTV);
+        cooperUtaTV = findViewById(R.id.cooperUtaTV);
+        nedderGreekTV = findViewById(R.id.nedderGreekTV);
+        davisMitchellTV = findViewById(R.id.davisMitchellTV);
+        cooperMitchellTV = findViewById(R.id.cooperMitchellTV);
+        oakUtaTV = findViewById(R.id.oakUtaTV);
+        spanioloWTV = findViewById(R.id.spanioloWTV);
+        spanioloMitchellTv = findViewById(R.id.spanioloMitchellTv);
+        centerMitchellTV = findViewById(R.id.centerMitchellTV);
         removeAllocationTV = findViewById(R.id.removeAllocationTV);
 
-        VIEW_SCHEDULE= findViewById(R.id.updatelocation_schedule);
+        VIEW_SCHEDULE = findViewById(R.id.updatelocation_schedule);
 
-        if(isCallingActivityVehicleDetailScreen){
+        if (isCallingActivityVehicleDetailScreen) {
             removeAllocationTV.setVisibility(View.VISIBLE);
         }
 
@@ -68,14 +77,14 @@ public class LocationScreen extends AppCompatActivity {
         centerMitchell = centerMitchellTV.getText().toString();
         removeAllocation = removeAllocationTV.getText().toString();
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role= prefs.getString("userRole","");
-        if(role!=null && role.equals("User") || isCallingActivityVehicleDetailScreen) {
+        String role = prefs.getString("userRole", "");
+        if (role != null && role.equals("User") || isCallingActivityVehicleDetailScreen) {
             onClicks();
         }
-        if(role.equals("Manager")){
+        if (role.equals("Manager")) {
             VIEW_SCHEDULE.setVisibility(View.VISIBLE);
         }
-        if(screen_ref!=(null)) {
+        if (screen_ref != (null)) {
             if (screen_ref.equals("hidebutton")) {
                 VIEW_SCHEDULE.setVisibility(View.INVISIBLE);
                 screen_ref = "";
@@ -91,116 +100,121 @@ public class LocationScreen extends AppCompatActivity {
         });
 
 
-    }
+        String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
+                "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
+                "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.user_id =\"" + userID + "\"";    //Query for getting all details of the operator from DB
+        c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
+
+        }
 
     private void onClicks() {
         cooperUtaTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("Cooper And UTA Blvd","1");
-            } else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",cooperUta);
-                myint.putExtra("id",1);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("Cooper And UTA Blvd", "1");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", cooperUta);
+                myint.putExtra("id", 1);
                 startActivity(myint);
             }
         });
         nedderGreekTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("W Nedderman & Greek Row","2");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",neederGreek);
-                myint.putExtra("id",2);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("W Nedderman & Greek Row", "2");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", neederGreek);
+                myint.putExtra("id", 2);
                 startActivity(myint);
             }
 
         });
         davisMitchellTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("S Davis & W Mitchell","3");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",davisMitchell);
-                myint.putExtra("id",3);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("S Davis & W Mitchell", "3");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", davisMitchell);
+                myint.putExtra("id", 3);
                 startActivity(myint);
             }
 
         });
         cooperMitchellTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("Cooper & W Mitchell","4");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",centerMitchell);
-                myint.putExtra("id",4);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("Cooper & W Mitchell", "4");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", centerMitchell);
+                myint.putExtra("id", 4);
                 startActivity(myint);
             }
 
         });
         oakUtaTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("S Oak & UTA Blvd","5");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",oakUta);
-                myint.putExtra("id",5);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("S Oak & UTA Blvd", "5");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", oakUta);
+                myint.putExtra("id", 5);
                 startActivity(myint);
             }
 
         });
         spanioloWTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("Spaniolo & W 1st","6");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",spanioloW);
-                myint.putExtra("id",6);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("Spaniolo & W 1st", "6");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", spanioloW);
+                myint.putExtra("id", 6);
                 startActivity(myint);
             }
 
         });
         spanioloMitchellTv.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("Spaniolo & W Mitchell","7");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",spanioloMithcell);
-                myint.putExtra("id",7);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("Spaniolo & W Mitchell", "7");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", spanioloMithcell);
+                myint.putExtra("id", 7);
                 startActivity(myint);
             }
         });
         centerMitchellTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation("S Center & W Mitchell","8");
-            }  else{
-                Intent myint = new Intent(LocationScreen.this,UserOrder.class);
-                myint.putExtra("location",centerMitchell);
-                myint.putExtra("id",8);
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation("S Center & W Mitchell", "8");
+            } else {
+                Intent myint = new Intent(LocationScreen.this, UserOrder.class);
+                myint.putExtra("location", centerMitchell);
+                myint.putExtra("id", 8);
                 startActivity(myint);
             }
         });
 
         removeAllocationTV.setOnClickListener(v -> {
-            if(isCallingActivityVehicleDetailScreen){
-                updateVehicleLocation(Status.UNASSIGNED.getDescription(),"null");
+            if (isCallingActivityVehicleDetailScreen) {
+                updateVehicleLocation(Status.UNASSIGNED.getDescription(), "null");
             }
         });
 
     }
 
-    public void viewschedule(){
+    public void viewschedule() {
 
-        Intent intent= new Intent(LocationScreen.this, UpdateLocationSchedule.class );
-        startActivity(intent );
+        Intent intent = new Intent(LocationScreen.this, UpdateLocationSchedule.class);
+        startActivity(intent);
     }
 
-    private void updateVehicleLocation(String locationName,String locationID){
+    private void updateVehicleLocation(String locationName, String locationID) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Resources.VEHICLE_LOCATION_ID, locationID);
-        if("null".equalsIgnoreCase(locationID)){
+        if ("null".equalsIgnoreCase(locationID)) {
             contentValues.putNull(Resources.VEHICLE_SCHEDULE_TIME);
         }
-        db.update(Resources.TABLE_VEHICLE,contentValues, "vehicle_id = ?", new String[] {vehicleID});
+        db.update(Resources.TABLE_VEHICLE, contentValues, "vehicle_id = ?", new String[]{vehicleID});
         Intent output = new Intent();
         output.putExtra("locationName", locationName);
         setResult(RESULT_OK, output);
@@ -211,36 +225,40 @@ public class LocationScreen extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
+        inflater.inflate(R.menu.user_menu, menu);
         SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
-        if("Manager".equalsIgnoreCase(role)){
+        String role = preferences.getString("userRole", "");
+        if ("Manager".equalsIgnoreCase(role)) {
             menu.findItem(R.id.app_bar_search).setVisible(true);
         }
+        if ("Operator".equalsIgnoreCase(role)) {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        }
         return true;
-    }   @Override
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
+        String role = preferences.getString("userRole", "");
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_location:
                 viewLocationList();
                 return true;
             case R.id.menu_view_orders:
-                role= role+"OrderDetails";
-                if (role == "User"){
+                role = role + "OrderDetails";
+                if (role == "User") {
                     try {
-                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users."+role);
+                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem.users." + role);
                         Intent homeIntent = new Intent(this, cls);
                         startActivity(homeIntent);
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
-                }
-                else{
+                } else {
                     try {
-                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem."+role);
+                        Class<?> cls = Class.forName("com.example.utamobilevendingsystem." + role);
                         Intent homeIntent = new Intent(this, cls);
                         startActivity(homeIntent);
                     } catch (ClassNotFoundException e) {
@@ -251,6 +269,9 @@ public class LocationScreen extends AppCompatActivity {
                 return true;
             case R.id.app_bar_search:
                 vehicleSearch();
+                return true;
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -271,7 +292,7 @@ public class LocationScreen extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(getApplicationContext(), LoginActivity.class);
-        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 
@@ -280,8 +301,20 @@ public class LocationScreen extends AppCompatActivity {
         startActivity(myint);
     }
 
+    private void vehicleSearch_optr() {
+        if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
+            Intent op_vehicle = new Intent(LocationScreen.this, VehicleDetailsScreen.class);
+            op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
+
+            startActivity(op_vehicle);
+        } else {
+            Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void Homescreen(String role) {
-        if (role.equals("Manager")){
+        if (role.equals("Manager")) {
             Intent myint = new Intent(this, ManagerHomeScreen.class);
             startActivity(myint);
         }
@@ -300,7 +333,7 @@ public class LocationScreen extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(getApplicationContext(), LocationScreen.class);
         startActivity(changePasswordIntent);
     }

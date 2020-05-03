@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.utamobilevendingsystem.HomeScreens.OperatorHomeScreen;
@@ -29,23 +31,51 @@ public class OperatorOrderDetails extends AppCompatActivity {
     ArrayList<String> orderStatusID = new ArrayList<>();
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
-    String userID;
+    String role;
+    int userID;
+    TextView tvTotalRevenue, tvTotalRevenue_Manager;
+    Cursor c;
     String TAG = "OperatorOrderDetails";
+
+    private void fetchSharedPref() {
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+        role = prefs.getString("userRole", "");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_order_details);
         Log.i(TAG, "OperatorOrderDetails: onCreate");
-        userID = getIntent().getStringExtra("userId");
+
+        //if (role.equals("Operator")) {
+            tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+            tvTotalRevenue_Manager = findViewById(R.id.TotalRevenue_Manager);
+
+
+            tvTotalRevenue.setVisibility(View.GONE);   //Disabling for operator view
+
+            tvTotalRevenue_Manager.setVisibility(View.GONE);   //Disabling for operator view
+       // }
+
+        //userID = getIntent().getStringExtra("userId");
+        fetchSharedPref();
         dbHelper = new DatabaseHelper(this);
-        db= dbHelper.getReadableDatabase();
+        db = dbHelper.getReadableDatabase();
         getData();
         initRecyclerView();
+
+        String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
+                "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
+                "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.user_id =\"" + userID + "\"";    //Query for getting all details of the operator from DB
+        c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
     }
+
     private void getData() {
         Log.i(TAG, "OperatorOrderDetails: getData");
 
-            Cursor cursor = db.rawQuery("SELECT O.order_id, sum(O.order_item_quantity), sum(O.order_item_price), O.order_status_id FROM orders O LEFT JOIN vehicle V ON O.order_vehicle_id=V.location_id WHERE V.user_ID = ? GROUP BY O.order_id", new String[]{userID});
+        Cursor cursor = db.rawQuery("SELECT O.order_id, sum(O.order_item_quantity), sum(O.order_item_price), O.order_status_id FROM orders O LEFT JOIN vehicle V ON O.order_vehicle_id=V.location_id WHERE V.user_ID = ? GROUP BY O.order_id", new String[]{String.valueOf(userID)});
         if (cursor.getCount() >= 1) {
             int i = 0;
             while (cursor.moveToNext()) {
@@ -61,7 +91,7 @@ public class OperatorOrderDetails extends AppCompatActivity {
     private void initRecyclerView() {
         Log.i(TAG, "OperatorOrderDetails: init recyclerview.");
         RecyclerView recyclerView = findViewById(R.id.recyclerViewManager);
-        UserOrderDetailsAdapter adapter = new UserOrderDetailsAdapter(OperatorOrderDetails.this, orderID , orderItemQuantity, orderItemPrice, orderStatusID);
+        UserOrderDetailsAdapter adapter = new UserOrderDetailsAdapter(OperatorOrderDetails.this, orderID, orderItemQuantity, orderItemPrice, orderStatusID);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -69,14 +99,19 @@ public class OperatorOrderDetails extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
+        inflater.inflate(R.menu.user_menu, menu);
         SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
-        if("Manager".equalsIgnoreCase(role)){
+        String role = preferences.getString("userRole", "");
+        if ("Manager".equalsIgnoreCase(role)) {
             menu.findItem(R.id.app_bar_search).setVisible(true);
         }
+        if ("Operator".equalsIgnoreCase(role)) {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        }
+
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -89,6 +124,9 @@ public class OperatorOrderDetails extends AppCompatActivity {
                 return true;
             case R.id.app_bar_search:
                 //startSettings();
+                return true;
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -109,6 +147,19 @@ public class OperatorOrderDetails extends AppCompatActivity {
         startActivity(opHome);
     }
 
+    private void vehicleSearch_optr() {
+        if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
+            Intent op_vehicle = new Intent(OperatorOrderDetails.this, VehicleDetailsScreen.class);
+            op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
+
+
+            startActivity(op_vehicle);
+        } else {
+            Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void viewOrders() {
         Intent viewOrders = new Intent(OperatorOrderDetails.this, OperatorOrderDetails.class);
         SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
@@ -122,7 +173,7 @@ public class OperatorOrderDetails extends AppCompatActivity {
         editor.clear();
         editor.apply();
         Intent logout = new Intent(OperatorOrderDetails.this, LoginActivity.class);
-        Toast.makeText(getApplicationContext(),"Logged out Successfully",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
         startActivity(logout);
     }
 
@@ -131,7 +182,7 @@ public class OperatorOrderDetails extends AppCompatActivity {
         startActivity(changePasswordIntent);
     }
 
-    private void viewLocationList(){
+    private void viewLocationList() {
         Intent changePasswordIntent = new Intent(OperatorOrderDetails.this, LocationScreen.class);
         startActivity(changePasswordIntent);
     }

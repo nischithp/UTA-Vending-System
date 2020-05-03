@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,12 +25,25 @@ public class ChangePassword extends AppCompatActivity {
 
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
+    int userID;
+    String role;
+    Cursor c;
 
     EditText passwordET, reEnterPasswordET;
     Button changeBtn;
+    private void fetchSharedPref() {
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+         role = prefs.getString("userRole", "");
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.getWritableDatabase();
+        fetchSharedPref();
         setContentView(R.layout.activity_change_password);
 
         passwordET = findViewById(R.id.passwordET);
@@ -53,6 +67,12 @@ public class ChangePassword extends AppCompatActivity {
                 }
             }
         });
+
+        String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
+                "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
+                "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.user_id =\"" + userID + "\"";    //Query for getting all details of the operator from DB
+        c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
+
     }
 
     public boolean validatePassword(){
@@ -68,6 +88,10 @@ public class ChangePassword extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu,menu);
+
+        if ("Operator".equalsIgnoreCase(role)) {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        }
         return true;
     }
     @Override
@@ -82,6 +106,9 @@ public class ChangePassword extends AppCompatActivity {
                 return true;
             case R.id.app_bar_search:
                 vehicleSearch();
+                return true;
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
                 return true;
             case R.id.menu_logout:
                 logout();
@@ -109,10 +136,25 @@ public class ChangePassword extends AppCompatActivity {
         Intent myint = new Intent(this, VehicleScreen.class);
         startActivity(myint);
     }
+    private void vehicleSearch_optr() {
+        if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
+            Intent op_vehicle = new Intent(ChangePassword.this, VehicleDetailsScreen.class);
+            op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
+
+
+            startActivity(op_vehicle);
+        } else {
+            Toast.makeText(getApplicationContext(), "No Vehicle assigned for this operator.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     private void viewOrders() {
-        Intent myint = new Intent(this, OrderDetails.class);
-        startActivity(myint);
+        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+        viewOrders.putExtra("userId", String.valueOf(userID));
+        startActivity(viewOrders);
     }
 
     private void logout() {

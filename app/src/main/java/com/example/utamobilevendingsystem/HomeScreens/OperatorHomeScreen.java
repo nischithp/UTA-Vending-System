@@ -273,7 +273,7 @@ public class OperatorHomeScreen extends RegistrationHelper {
         if (c.getCount() > 0) {   //checking if operator has a vehicle assigned
             TextView op = findViewById(R.id.fNameTV);   //storing the First name of the operator in the op textview
             Intent op_vehicle = new Intent(OperatorHomeScreen.this, VehicleDetailsScreen.class);
-            op_vehicle.putExtra("OPERATOR_VEHICLE", op.getText().toString());   //sending the Op FName to the Vehicle Details Screen
+          //  op_vehicle.putExtra("OPERATOR_VEHICLE", op.getText().toString());   //sending the Op FName to the Vehicle Details Screen
             op_vehicle.putExtra("flag", "1");   //Sending a flag variable "1" as well
 
             startActivity(op_vehicle);

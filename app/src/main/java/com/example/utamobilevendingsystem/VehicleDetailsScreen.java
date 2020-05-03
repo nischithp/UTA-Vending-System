@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.utamobilevendingsystem.HomeScreens.OperatorHomeScreen;
 import com.example.utamobilevendingsystem.domain.Status;
 import com.example.utamobilevendingsystem.domain.Vehicle;
 import com.example.utamobilevendingsystem.domain.VehicleType;
@@ -40,6 +41,8 @@ public class VehicleDetailsScreen extends AppCompatActivity {
     String vehicleID,Operator_name;
     String flag="";
     Button UpdateInventorybtn;
+    int userID;
+    String role;
 
 
     final int OPERATOR_REQUEST_CODE = 1111;
@@ -54,9 +57,16 @@ public class VehicleDetailsScreen extends AppCompatActivity {
 
     final String LOCATION_SCHEDULE_QUERY = "select schedule from location where locationName = ?";
 
+    private void fetchSharedPref() {
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+        role = prefs.getString("userRole", "");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fetchSharedPref();
         flag = getIntent().getStringExtra("flag");
 
         setContentView(R.layout.activity_vehicle_details_screen);
@@ -66,10 +76,10 @@ public class VehicleDetailsScreen extends AppCompatActivity {
             tvAvaiablility=findViewById(R.id.tvAvaiablility);
             toggleAvailability=findViewById(R.id.switchAvaiability);
 
-            tvAvaiablility.setEnabled(false);   //Disabling for operator view
-            tvTotalRevenue.setVisibility(View.GONE);   //hiding for operator view
-            tvTotalRevenueDesc.setVisibility(View.GONE);    //hiding for operator view
-            toggleAvailability.setEnabled(false);   //Disabling for operator view
+            tvAvaiablility.setVisibility(View.GONE);   //Disabling for operator view
+            //tvTotalRevenue.setVisibility(View.GONE);   //hiding for operator view
+            // tvTotalRevenueDesc.setVisibility(View.GONE);    //hiding for operator view
+            toggleAvailability.setVisibility(View.GONE);   //Disabling for operator view
         }
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -88,14 +98,11 @@ public class VehicleDetailsScreen extends AppCompatActivity {
 
         Cursor c,Get_Vehicle_id;
         if (flag.equals("1")) {     //condition check for Operator view
-            Operator_name = getIntent().getStringExtra("OPERATOR_VEHICLE");
-            String[] Operator_name1 = Operator_name.split(": ");
-            String name_opr = Operator_name1[1];   //storing operator name
+
 
             String VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR = "select v.name, l.locationName, v.type, v.availability, l.schedule, u.first_name, v.user_id, v.schedule_time " +
                     "from vehicle v LEFT JOIN location l on l.location_id = v.location_id " +
-                    "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.first_name =\"" + name_opr + "\"";    //Query for getting all details of the operator from DB
-            System.out.println("--------------------------------------------\n\n\n\n\n\n" + VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR);
+                    "LEFT JOIN user_details u on v.user_id = u.user_id WHERE u.user_id =\"" + userID + "\"";    //Query for getting all details of the operator from DB
             c = db.rawQuery(VEHICLE_DETAILS_SCREEN_QUERY_FOR_OPTR, null);
 
 //            String[] vehicle_name1 = vehicleID.split("");
@@ -130,18 +137,18 @@ public class VehicleDetailsScreen extends AppCompatActivity {
             }
         }
 
-        if(flag.equals("2")){    //condition check for Manager view
-            c = db.rawQuery(VEHICLE_TOTAL_REVENUE, new String[]{vehicleID});
+        // if (flag.equals("2")) {    //condition check for Manager view ----------
+        c = db.rawQuery(VEHICLE_TOTAL_REVENUE, new String[]{vehicleID});
 
-            float totalCost = 0;
-            if (c.getCount() > 0) {
-                while (c.moveToNext()) {
-                    totalCost += Float.valueOf(c.getString(0)) * 1.0825;
-                }
+        float totalCost = 0;
+        if (c.getCount() > 0) {
+            while (c.moveToNext()) {
+                totalCost += Float.valueOf(c.getString(0)) * 1.0825;
             }
-            DecimalFormat df = new DecimalFormat("####0.00");
-            tvTotalRevenueDesc.setText(String.valueOf(df.format(totalCost)));
         }
+        DecimalFormat df = new DecimalFormat("####0.00");
+        tvTotalRevenueDesc.setText(String.valueOf(df.format(totalCost)));
+
         toggleAvailability.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -272,11 +279,14 @@ public class VehicleDetailsScreen extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu,menu);
-        SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-        String role = preferences.getString("userRole","");
-        if("Manager".equalsIgnoreCase(role)){
+        inflater.inflate(R.menu.user_menu, menu);
+        //SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
+
+        if ("Manager".equalsIgnoreCase(role)) {
             menu.findItem(R.id.app_bar_search).setVisible(true);
+        }
+        if ("Operator".equalsIgnoreCase(role)) {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         }
         return true;
     }
@@ -314,6 +324,9 @@ public class VehicleDetailsScreen extends AppCompatActivity {
             case R.id.app_bar_search:
                 vehicleSearch();
                 return true;
+            case R.id.Optr_vehicledetails:
+                vehicleSearch_optr();
+                return true;
             case R.id.menu_logout:
                 logout();
                 return true;
@@ -340,8 +353,16 @@ public class VehicleDetailsScreen extends AppCompatActivity {
     }
 
     private void viewOrders() {
-        Intent myint = new Intent(this, OrderDetails.class);
-        startActivity(myint);
+        Intent viewOrders = new Intent(this, OperatorOrderDetails.class);
+        SharedPreferences prefs = getSharedPreferences("currUser", MODE_PRIVATE);
+        userID = prefs.getInt("userid", 0);
+        viewOrders.putExtra("userId", String.valueOf(userID));
+        startActivity(viewOrders);
+    }
+
+    private void vehicleSearch_optr() {
+
+
     }
 
     private void logout() {
