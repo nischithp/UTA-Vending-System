@@ -227,6 +227,7 @@
                 android:horizontalSpacing="10dp"
                 android:padding="18dip"
                 android:textColor="@color/colorPrimaryDark"
+                android:text="0.0"
                 android:textSize="14dp"
                 android:textStyle="bold" />
         </TableRow>
