@@ -62,7 +62,6 @@ public class UpdateLocationSchedule extends AppCompatActivity {
         while(cursor.moveToNext())
         {
             if(i==0){
-                System.out.println("-----------------------------"+cursor.getString(cursor.getColumnIndex("schedule")));
                  CooperAndWMitchellET.setText(cursor.getString(cursor.getColumnIndex("schedule")));
              }
              if(i==1){

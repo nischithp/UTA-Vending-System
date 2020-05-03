@@ -88,7 +88,6 @@
                 android:padding="18dip"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="24dp"
-                android:inputType="number"
                 android:textStyle="bold" />
         </TableRow>
 
@@ -117,7 +116,6 @@
                 android:padding="18dip"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="24dp"
-                android:inputType="number"
                 android:textStyle="bold" />
 
         </TableRow>
@@ -147,13 +145,11 @@
                 android:padding="18dip"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="24dp"
-                android:inputType="number"
                 android:textStyle="bold" />
         </TableRow>
     </TableLayout>
 
     <Button
-
         android:id="@+id/updateInventoryBtn"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
