@@ -90,10 +90,10 @@ public class ChangePassword extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu, menu);
-        if ("Operator".equalsIgnoreCase(role)) {
-            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        if(role.equals("Manager")){
+            menu.findItem(R.id.app_bar_search).setVisible(true);
         }
-        if ("Manager".equalsIgnoreCase(role)) {
+        else if(role.equals("Operator")) {
             menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         }
         return true;

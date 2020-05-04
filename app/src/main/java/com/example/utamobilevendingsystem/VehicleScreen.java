@@ -76,10 +76,10 @@ public class VehicleScreen extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu, menu);
-        if(role=="Manager"){
+        if(role.equals("Manager")){
             menu.findItem(R.id.app_bar_search).setVisible(true);
         }
-        else if(role=="Operator") {
+        else if(role.equals("Operator")) {
             menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
         }
         return true;
