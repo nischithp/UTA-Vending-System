@@ -24,7 +24,8 @@ import java.util.ArrayList;
 public class VehicleScreen extends AppCompatActivity {
     DatabaseHelper dbHelper;
     SQLiteDatabase db;
-
+    SharedPreferences preferences;
+    String role;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,8 @@ public class VehicleScreen extends AppCompatActivity {
 
         dbHelper = DatabaseHelper.getInstance(this);
         db = dbHelper.getWritableDatabase();
-
+        preferences= getSharedPreferences("currUser", MODE_PRIVATE);
+        role= preferences.getString("userRole", "");
         ArrayList<Vehicle> vehicleList = new ArrayList<>();
 
         ListView vehicleListView = (ListView) findViewById(R.id.vehicleList);
@@ -74,7 +76,12 @@ public class VehicleScreen extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_menu, menu);
-        menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        if(role=="Manager"){
+            menu.findItem(R.id.app_bar_search).setVisible(true);
+        }
+        else if(role=="Operator") {
+            menu.findItem(R.id.Optr_vehicledetails).setVisible(true);
+        }
         return true;
     }
 
@@ -98,8 +105,6 @@ public class VehicleScreen extends AppCompatActivity {
                 logout();
                 return true;
             case R.id.menu_home:
-                SharedPreferences preferences = getSharedPreferences("currUser", MODE_PRIVATE);
-                String role = preferences.getString("userRole", "");
                 role = role + "HomeScreen";
                 try {
                     Class<?> cls = Class.forName("com.example.utamobilevendingsystem.HomeScreens." + role);

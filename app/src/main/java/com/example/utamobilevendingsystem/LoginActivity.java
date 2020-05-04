@@ -77,25 +77,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void insert(){
-        ContentValues user_creds=new ContentValues();
-        user_creds.put("user_id","1");
-        user_creds.put("username","test");
-        user_creds.put("password","pass123");
-        user_creds.put("role","User");
-        db.insert(Resources.TABLE_USER_CREDS,null, user_creds);
-        ContentValues user_details= new ContentValues();
-        user_details.put("user_id","1");
-        user_details.put("username","test");
-        user_details.put("first_name","Prajwal");
-        user_details.put("last_name","Prasad");
-        user_details.put("uta_id","1001");
-        user_details.put("dob","11/11/2019");
-        user_details.put("phone","9876666111");
-        user_details.put("emailid","pp@gmail.com");
-        user_details.put("city","blr");
-        user_details.put("state","KA");
-        user_details.put("zip","560079");
-        db.insert(Resources.TABLE_USER_DETAILS,null, user_details);
         ContentValues items= new ContentValues();
         items.put("item_id","1");
         items.put("item_name","Sandwiches");
