@@ -104,9 +104,8 @@ public class UserOrder extends AppCompatActivity {
                 snacksAvl.setText(String.valueOf(vehicleInventory.get(3)));
                 placeOrderMethod();
             } else {
+                onBackPressed();
                 Toast.makeText(getApplicationContext(), "The vehicle schedule is between "+schedule+" only!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(UserOrder.this, LocationScreen.class);
-                startActivity(intent);
             }
         }
         else{
