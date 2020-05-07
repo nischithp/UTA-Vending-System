@@ -68,6 +68,9 @@ public class OperatorList extends AppCompatActivity {
         }
     }
     private void updateOperatorVehicle(String userID){
+        ContentValues contentValues1 = new ContentValues();
+        contentValues1.putNull(Resources.VEHICLE_USER_ID);
+        db.update(Resources.TABLE_VEHICLE, contentValues1, "user_id = ?", new String[] {userID});
         ContentValues contentValues = new ContentValues();
         contentValues.put(Resources.VEHICLE_USER_ID, userID);
         db.update(Resources.TABLE_VEHICLE,contentValues, "vehicle_id = ?", new String[] {vehicleID});

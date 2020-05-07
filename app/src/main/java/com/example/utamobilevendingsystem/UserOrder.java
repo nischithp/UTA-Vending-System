@@ -77,42 +77,44 @@ public class UserOrder extends AppCompatActivity {
     }
 
     private void getInventory(int locationId) {
-        String selectQuery = "SELECT "+Resources.VEHICLE_ID+","+ Resources.VEHICLE_SCHEDULE_TIME+ " FROM " + Resources.TABLE_VEHICLE + " WHERE "
+        String selectQuery = "SELECT "+Resources.VEHICLE_ID+","+ Resources.VEHICLE_SCHEDULE_TIME+","+ Resources.VEHICLE_AVAILABILITY+" FROM " + Resources.TABLE_VEHICLE + " WHERE "
                 + Resources.VEHICLE_LOCATION_ID + " = " + locationId;
         Cursor c = db.rawQuery(selectQuery, null);
-
         if (c.getCount() > 0){
             c.moveToFirst();
             int  vehicleID =c.getInt(c.getColumnIndex(Resources.VEHICLE_ID));
             String schedule =c.getString(c.getColumnIndex(Resources.VEHICLE_SCHEDULE_TIME));
-            if(validateTime(schedule)) {
-                editor.putInt("vehicleID", vehicleID);
-
-                String inventoryQuery = "SELECT * FROM " + Resources.TABLE_VEHICLE_INVENTORY + " WHERE " + Resources.VEHICLE_INVENTORY_VEHICLE_ID + " = " + vehicleID;
-                Cursor c1 = db.rawQuery(inventoryQuery, null);
-                int count = c1.getCount();
-
-                while (count > 0) {
-                    c1.moveToPosition(count - 1);
-                    int item_id = c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_ITEM_ID));
-                    int quantity = c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_QUANTITY));
-                    vehicleInventory.put(item_id, quantity);
-                    count--;
+            String availabilty = c.getString(c.getColumnIndex(Resources.VEHICLE_AVAILABILITY));
+            if("Available".equalsIgnoreCase(availabilty)) {
+                if (validateTime(schedule)) {
+                    editor.putInt("vehicleID", vehicleID);
+                    String inventoryQuery = "SELECT * FROM " + Resources.TABLE_VEHICLE_INVENTORY + " WHERE " + Resources.VEHICLE_INVENTORY_VEHICLE_ID + " = " + vehicleID;
+                    Cursor c1 = db.rawQuery(inventoryQuery, null);
+                    int count = c1.getCount();
+                    while (count > 0) {
+                        c1.moveToPosition(count - 1);
+                        int item_id = c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_ITEM_ID));
+                        int quantity = c1.getInt(c1.getColumnIndex(Resources.VEHICLE_INVENTORY_QUANTITY));
+                        vehicleInventory.put(item_id, quantity);
+                        count--;
+                    }
+                    swichAvl.setText(String.valueOf(vehicleInventory.get(1)));
+                    drinksAvl.setText(String.valueOf(vehicleInventory.get(2)));
+                    snacksAvl.setText(String.valueOf(vehicleInventory.get(3)));
+                    placeOrderMethod();
+                } else {
+                    onBackPressed();
+                    Toast.makeText(getApplicationContext(), "The vehicle schedule is between " + schedule + " only!", Toast.LENGTH_SHORT).show();
                 }
-                swichAvl.setText(String.valueOf(vehicleInventory.get(1)));
-                drinksAvl.setText(String.valueOf(vehicleInventory.get(2)));
-                snacksAvl.setText(String.valueOf(vehicleInventory.get(3)));
-                placeOrderMethod();
-            } else {
+            }else {
                 onBackPressed();
-                Toast.makeText(getApplicationContext(), "The vehicle schedule is between "+schedule+" only!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "No vehicle has been assigned to this location!", Toast.LENGTH_SHORT).show();
             }
         }
         else{
             onBackPressed();
             Toast.makeText(getApplicationContext(), "No vehicle has been assigned to this location!", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private boolean validateTime(String schedule) {
